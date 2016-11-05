@@ -2,7 +2,7 @@
  * Created by Nicholas on 10/2/2016.
  */
 var todo;
-var num [];
+var num;
 window.onload = init;
 function init() {
     var input = document.getElementsByClassName("button");
@@ -11,8 +11,8 @@ function init() {
     }
 }
 
-    function combine(eventObj) {
-        var button = eventObj.target;
+    function combine(that) {
+        var button = that.target;
         button = button.id;
         if(button == "AC")         { num = 0; }
         if(button == "CE")         { num = 0;  }

@@ -1,5 +1,5 @@
 body {
-    background-color: hsl(0, 0%, 70%);
+    background-color: white;
     width: 100%;
     box-sizing: border-box;
     padding: 0;
@@ -15,17 +15,17 @@ sup {
 .calculator {
     width: 450px;
     height: 750px;
-    background-color: hsl(0, 0%, 80%);
+    background-color: saddlebrown;
     margin: 2% auto 0 auto;
     border-radius: 10px;
-    box-shadow: 5px 5px 10px hsl(0, 0%, 50%);
+    box-shadow: 5px 5px 20px hsl(0, 0%, 50%);
     border: 2px outset hsl(0, 0%, 50%);
 }
 
 .display {
     width:  400px;
     height: 200px;
-    background-color: hsl(0, 0%, 92%);
+    background-color: hsl(0, 0%, 95%);
     margin: 20px auto 10px auto;
     border: 5px groove hsl(0, 0%, 60%);
     border-radius: 10px;
@@ -44,6 +44,7 @@ button {
     height: 50px;
     margin: 10px 10px 0;
     outline: none;
+    border-radius: 5px;
 }
 
 .advancedfunctionKey {

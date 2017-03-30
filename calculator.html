@@ -3,33 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Calculator</title>
-    <link rel="stylesheet" href="../cssreset.css">
-    <link rel="stylesheet" href="../portfoliostyles.css">
+    <link rel="stylesheet" href="cssreset.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="calculator">
-        <div class="title"><h3>ELECTRONIC CALCULATOR</h3></div>
-        <div class="display" id="display1"><h1></h1></div>
+        <div class="display">
+            <div class="displayInput" id="displayLine1"></div>
+            <div class="displayCurrent" id="displayLine2"></div>
+            <div class="displayHistory" id="displayLine3"></div>
+            <div class="displayHistory" id="displayLine4"></div>
+            <div class="displayHistory" id="displayLine5"></div>
+            <div class="displayHistory" id="displayLine6"></div>
+        </div>
         <div class="keypad">
-            <div class="button" id = "AC"><h2>AC</h2></div>
-            <div class="button" id = "CE"><h2>CE</h2></div>
-            <div class="button" id = "devide"><h2>/</h2></div>
-            <div class="button" id = "multiply"><h2>X</h2></div>
-            <div class="button" id = "7"><h2>7</h2></div>
-            <div class="button" id = "8"><h2>8</h2></div>
-            <div class="button" id = "9"><h2>9</h2></div>
-            <div class="button" id = "minus"><h2>-</h2></div>
-            <div class="button" id = "4"><h2>4</h2></div>
-            <div class="button" id = "5"><h2>5</h2></div>
-            <div class="button" id = "6"><h2>6</h2></div>
-            <div class="button" id = "plus"><h2>+</h2></div>
-            <div class="button" id = "1"><h2>1</h2></div>
-            <div class="button" id = "2"><h2>2</h2></div>
-            <div class="button" id = "3"><h2>3</h2></div>
-            <div class="button" id = "equals"><h2>=</h2></div>
-            <div class="button" id ="0"><h2>0</h2></div>
-            <div class="button" id = "period"><h2>.</h2></div>
+
+            <button class="advancedfunctionKey" id = "e"><p>e</p></button>
+            <button class="advancedfunctionKey" id = "sineInverse"><p>SIN<sup>-1</sup></p></button>
+            <button class="advancedfunctionKey" id = "cosineInverse"><p>COS<sup>-1</sup></p></button>
+            <button class="advancedfunctionKey" id = "tangentInverse"><p>TAN<sup>-1</sup></p></button>
+            <button class="advancedfunctionKey" id = "PI"><p>pi</p></button>
+
+            <button class="advancedfunctionKey" id = "xToTheNegativeOne"><p>x<sup>-1</sup></p></button>
+            <button class="advancedfunctionKey" id = "sine"><p>SIN</p></button>
+            <button class="advancedfunctionKey" id = "cosine"><p>COS</p></button>
+            <button class="advancedfunctionKey" id = "tangent"><p>TAN</p></button>
+            <button class="advancedfunctionKey" id = "power"><p>^</p></button>
+
+            <button class="advancedfunctionKey" id = "xsquared"><p>x<sup>2</sup></p></button>
+            <button class="advancedfunctionKey" id = "squareroot"><p>squareroot</p></button>
+            <button class="advancedfunctionKey" id = "leftParen"><p>(</p></button>
+            <button class="advancedfunctionKey" id = "rightParen"><p>)</p></button>
+            <button class="functionKey" id = "devided"><p>/</p></button>
+
+            <button class="advancedfunctionKey" id = "10ToTheX"><p>10<sup>X</sup></p></button>
+            <button class="numberKey" id = "seven"><p>7</p></button>
+            <button class="numberKey" id = "eight"><p>8</p></button>
+            <button class="numberKey" id = "nine"><p>9</p></button>
+            <button class="functionKey" id = "times"><p>X</p></button>
+             
+            <button class="advancedfunctionKey" id = "LOG"><p>LOG</p></button>
+            <button class="numberKey" id = "four"><p>4</p></button>
+            <button class="numberKey" id = "five"><p>5</p></button>
+            <button class="numberKey" id = "six"><p>6</p></button>
+            <button class="functionKey" id = "minus"><p>-</p></button>
+
+            <button class="advancedfunctionKey" id = "eToTheX"><p>e<sup>x</sup></p></button>
+            <button class="numberKey" id = "one"><p>1</p></button>
+            <button class="numberKey" id = "two"><p>2</p></button>
+            <button class="numberKey" id = "three"><p>3</p></button>
+            <button class="functionKey" id = "plus"><p>+</p></button>
+
+            <button class="advancedfunctionKey" id = "LN"><p>LN</p></button>
+            <button class="numberKey" id = "zero"><p>0</p></button>
+            <button class="numberKey" id = "period"><p>.</p></button>
+            <button class="numberKey" id = "negative"><p>(-)</p></button>
+            <button class="functionKey" id = "enter"><p>Solve</p></button>
         </div>
     </div>
     <script src="calculator.js"></script>

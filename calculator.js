@@ -1,106 +1,55 @@
 //Model
 var model = {
-    displayInputs: [],
     displayCurrent: [],
     displayHistory: [],
-    lastInputOperator: false,
 
-    addNumber: function (input) {
-        if (this.displayInputs.length > 0) {
-            if (this.lastInputOperator == true) {
-                this.displayCurrent.push(this.displayInputs.join(""));
-                this.displayInputs = [];
-            }
-        } 
-        this.displayInputs.push(input);
-        render.displayInput(false);
-        render.displayCurrent();
-        this.lastInputOperator = false;
+    addInput: function (input) {
+        this.displayCurrent.push(input);
+        render.displayInput();
     },
-
-    addOperator: function (input) {
-        if (this.displayInputs.length > 0) {
-            this.displayCurrent.push(this.displayInputs.join(""));
-            this.displayInputs = [];
-        }
-        this.displayInputs.push(input);
-        render.displayInput(true);
-        render.displayCurrent();
-        this.lastInputOperator = true;
-    }
 }
 
 
 //View
 var render = {
-    displayInput: function (lastInputOperator) {
+    displayInput: function () {
         var displayLine1 = document.getElementById("displayLine1");
-        if (lastInputOperator) {
-            displayLine1.innerText = this.translateOperator(model.displayInputs);
-        } else {
-            displayLine1.innerText = model.displayInputs.join("");
-        }
+        displayLine1.innerHTML = "";
+        model.displayCurrent.forEach(function(input) {
+            if(render.translateOperator(input) == input) {
+                displayLine1.innerHTML += render.translateOperator(input);
+            } else {
+                displayLine1.innerHTML += " " + render.translateOperator(input) + " ";
+            }
+            
+        });
     },
 
-    displayCurrent: function () {
-        console.log(model.displayCurrent);
-        var displayLine2 = document.getElementById("displayLine2");
-        displayLine2.innerText = "";
-        //  displayLine2 = model.displayCurrent.forEach(render.translateOperator(element));
-        for (var i = 0; i < model.displayCurrent.length; i++) {
-            displayLine2.innerText += " " + this.translateOperator(model.displayCurrent[i]);
-        }
-    },
-
-
-    translateOperator: function (operator) {
-        switch (operator.toString()) {
+    translateOperator: function (input) {
+        switch (input.toString()) {
             case 'divide':
                 return "&divide;";
             case 'times':
-                return "X";
+                return "x";
             case 'minus':
                 return "-";
             case 'plus':
                 return "+";
             default:
-                return operator;
+                return input;
         }
     }
 }
+
 
 
 //Controller
 var handlers = {
     findId: function (e) {
         if (!e.target.id) {
-            this.identifyInput(e.target.parentNode.id);
+            model.addInput(e.target.parentNode.id);
         } else {
-            this.identifyInput(e.target.id);
-        }
-    },
-
-    identifyInput: function (input) {
-        switch (input) {
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-            case '0':
-                model.addNumber(input);
-                break;
-            case 'divide':
-            case 'times':
-            case 'minus':
-            case 'plus':
-                model.addOperator(input);
-                break;
+            model.addInput(e.target.id);
         }
     }
-
 }

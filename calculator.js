@@ -43,7 +43,7 @@ var render = {
 
     dynamicFontSize: function() {
         //reduces font-size by 90% at a time till the equation fits inside the display's width
-        while(document.getElementById("displayLine1").clientWidth > 400) {
+        while(document.getElementById("displayLine1").clientWidth > 390) {
             var displayLine1 = document.getElementById("displayLine1");
             var FontSize = parseFloat(window.getComputedStyle(displayLine1, null).getPropertyValue("font-size"));
             displayLine1.style.fontSize = (FontSize - 1).toString() + "px";

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="cssreset.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body onkeyup="handlers.findKey(event)">
     <div class="calculator">
         <div class="display">
             <div class="displayInput" id="displayLine1"></div>
@@ -24,7 +24,7 @@
             <button class="advancedfunctionKey" id = "sineInverse"><p>SIN<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" id = "cosineInverse"><p>COS<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" id = "tangentInverse"><p>TAN<sup>-1</sup></p></button>
-            <button class="advancedfunctionKey" id = "PI"><p>pi</p></button>
+            <button class="advancedfunctionKey" d="PI"><p>pi</p></button>
 
             <button class="advancedfunctionKey" id = "xToTheNegativeOne"><p>x<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" id = "sine"><p>SIN</p></button>

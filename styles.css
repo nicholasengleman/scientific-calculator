@@ -55,6 +55,11 @@ Display Styles
     font-weight: 800;
 }
 
+.displayInput h3 {
+    color: green;
+    display: inline-block;
+}
+
 /*=======================
 Keypad Styles
 =========================*/

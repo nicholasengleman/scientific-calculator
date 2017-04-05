@@ -11,7 +11,7 @@
     <div class="calculator">
         <div class="display">
             <div class="displayInput" id="displayLine1"></div>
-            <div class="displayCurrent" id="displayLine2"></div>
+            <div class="displayHistory" id="displayLine2"></div>
             <div class="displayHistory" id="displayLine3"></div>
             <div class="displayHistory" id="displayLine4"></div>
             <div class="displayHistory" id="displayLine5"></div>
@@ -20,43 +20,44 @@
         </div>
         <div class="keypad" onclick="handlers.findId(event)">
 
-            <button class="advancedfunctionKey" id = "e"><p>e</p></button>
+            <button class="advancedfunctionKey" id = "xToTheNegativeOne"><p>x<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" id = "sineInverse"><p>SIN<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" id = "cosineInverse"><p>COS<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" id = "tangentInverse"><p>TAN<sup>-1</sup></p></button>
             <button class="advancedfunctionKey" d="PI"><p>pi</p></button>
 
-            <button class="advancedfunctionKey" id = "xToTheNegativeOne"><p>x<sup>-1</sup></p></button>
+            <button class="advancedfunctionKey" id = "xsquared"><p>x<sup>2</sup></p></button>
             <button class="advancedfunctionKey" id = "sine"><p>SIN</p></button>
             <button class="advancedfunctionKey" id = "cosine"><p>COS</p></button>
             <button class="advancedfunctionKey" id = "tangent"><p>TAN</p></button>
             <button class="advancedfunctionKey" id = "power"><p>^</p></button>
 
-            <button class="advancedfunctionKey" id = "xsquared"><p>x<sup>2</sup></p></button>
+            <button class="advancedfunctionKey" id = "LOG"><p>LOG</p></button>
             <button class="advancedfunctionKey" id = "squareroot"><p>&radic;</p></button>
             <button class="advancedfunctionKey" id = "leftParen"><p>(</p></button>
             <button class="advancedfunctionKey" id = "rightParen"><p>)</p></button>
             <button class="functionKey" id = "divide"><p>&divide;</p></button>
 
-            <button class="advancedfunctionKey" id = "10ToTheX"><p>10<sup>X</sup></p></button>
+            <button class="advancedfunctionKey" id = "e"><p>e</p></button>
             <button class="numberKey" id = "7"><p>7</p></button>
             <button class="numberKey" id = "8"><p>8</p></button>
             <button class="numberKey" id = "9"><p>9</p></button>
             <button class="functionKey" id = "times"><p>X</p></button>
-             
-            <button class="advancedfunctionKey" id = "LOG"><p>LOG</p></button>
+
+            <button class="advancedfunctionKey" id = "LN"><p>LN</p></button>
             <button class="numberKey" id = "4"><p>4</p></button>
             <button class="numberKey" id = "5"><p>5</p></button>
             <button class="numberKey" id = "6"><p>6</p></button>
             <button class="functionKey" id = "minus"><p>-</p></button>
 
-            <button class="advancedfunctionKey" id = "eToTheX"><p>e<sup>x</sup></p></button>
+
+            <button class="clearKey" id = "clearhistory"><p>Clear All</p></button>
             <button class="numberKey" id = "1"><p>1</p></button>
             <button class="numberKey" id = "2"><p>2</p></button>
             <button class="numberKey" id = "3"><p>3</p></button>
             <button class="functionKey" id = "plus"><p>+</p></button>
 
-            <button class="advancedfunctionKey" id = "LN"><p>LN</p></button>
+            <button class="clearKey" id = "clear"><p>Clear</p></button>
             <button class="numberKey" id = "0"><p>0</p></button>
             <button class="numberKey" id = "period"><p>.</p></button>
             <button class="numberKey" id = "negative"><p>(-)</p></button>

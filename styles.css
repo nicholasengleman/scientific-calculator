@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'TI83Font';
+    src: url('TI40.ttf');
+}
+
 body {
     background-color: white;
     width: 100%;
@@ -33,7 +38,7 @@ Display Styles
     border-right: 3px solid darkslategrey;
     border-bottom: 3px solid darkslategrey;
     border-radius: 10px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Courier New';
     text-align: right;
     padding-right: 10px;
 }
@@ -64,6 +69,7 @@ Display Styles
     font-size: 20px;
     font-weight: 600;
     color: grey;
+    display: inline-block;
 }
 
 .displayInput h3 {

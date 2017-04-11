@@ -101,6 +101,7 @@ var model = {
         $("#displayLine2").html(function () {
             return equation + " = " + $("#displayLine1").html();
         });
+        render.dynamicFontSize();
     }
 };
 
@@ -154,9 +155,9 @@ var render = {
 
     dynamicFontSize: function () {
         //reduces font-size so that the input always fits inside the display's width
-        for (var i = 1; i < 3; i++) {
-            while (document.getElementById("displayLine"+i).clientWidth > 390) {
-                var displayLine = document.getElementById("displayLine"+1);
+        for (var i = 1; i < 8; i++) {
+            var displayLine = document.getElementById("displayLine"+i);
+            while (displayLine.clientWidth > 390) {
                 var currentFontSize = parseFloat(window.getComputedStyle(displayLine, null).getPropertyValue("font-size"));
                 displayLine.style.fontSize = (currentFontSize - 1).toString() + "px";
             }

@@ -1,9 +1,8 @@
-"use strict";
-
 //Model
 var model = {
     displayCurrent: [],
     displayHistory: [],
+    equation: "",
 
     addInput: function (input) {
         this.displayCurrent.push(input);
@@ -11,7 +10,17 @@ var model = {
     },
 
     calc: function () {
+        this.equation = $("#displayLine1").html();
         var i;
+        //computes sin, cosine, tangent
+        for (i = 0; i < this.displayCurrent.length; i++) {
+            switch (this.displayCurrent[i]) {
+                case "sine":
+                    this.displayCurrent.splice(i, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), -1));
+                    i--;
+                    break;
+            }
+        }
         //computes exponents and roots
         for (i = 0; i < this.displayCurrent.length; i++) {
             switch (this.displayCurrent[i]) {
@@ -20,7 +29,7 @@ var model = {
                     i--;
                     break;
                 case "xsquared":
-                    this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), 2 ));
+                    this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), 2));
                     i--;
                     break;
             }
@@ -53,48 +62,67 @@ var model = {
             }
         }
         render.displayInput();
+        $("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
+        this.shiftHistory(this.equation);
     },
 
-    clear: function() {
-       this.displayCurrent = [];
-       render.displayInput();
-    }
-}
+    clear: function (clearAllHistory) {
+        this.displayCurrent = [];
+        if(clearAllHistory) {
+            for(var i = 2; i<8; i++) {
+                $("#displayLine" + (i)).html("");
+            }
+        }
+        render.displayInput();
+    },
 
+    shiftHistory: function (equation) {
+        for (var i = 6; i > 1; i--) {
+            $("#displayLine" + (i + 1)).html(function () {
+                return $("#displayLine" + (i)).html();
+            });
+        }
+        $("#displayLine2").html(function () {
+            return equation + " = " + $("#displayLine1").html();
+        });
+    }
+};
 
 
 //View
 var render = {
     displayInput: function () {
+        $("#displayLine1").removeClass("displayAnswer").addClass("displayInput");
         var displayLine1 = document.getElementById("displayLine1");
         displayLine1.innerHTML = "";
         model.displayCurrent.forEach(function (input) {
             if (render.translateOperator(input) === input) {
                 displayLine1.innerHTML += render.translateOperator(input);
-            }  else if(render.translateOperator(input).search("sup") !== -1) {
+            } else if (render.translateOperator(input).search("sup") !== -1) {
                 displayLine1.innerHTML += " " + render.translateOperator(input) + " ";
             } else {
                 displayLine1.innerHTML += " <h3>" + render.translateOperator(input) + "</h3> ";
             }
         });
         this.dynamicFontSize();
-        console.log(model.displayCurrent);
     },
 
     translateOperator: function (input) {
         switch (input.toString()) {
-            case 'divide':
+            case "divide":
                 return "&divide;";
-            case 'times':
+            case "times":
                 return "x";
-            case 'minus':
+            case "minus":
                 return "-";
-            case 'plus':
+            case "plus":
                 return "+";
-            case 'xToTheNegativeOne':
+            case "xToTheNegativeOne":
                 return "<sup>-1</sup>";
-            case 'xsquared':
+            case "xsquared":
                 return "<sup>2</sup>";
+            case "sine":
+                return "sin(";
             default:
                 return input;
         }
@@ -109,25 +137,21 @@ var render = {
 
         }
     }
-}
+};
 
 //Controller
 var handlers = {
     findId: function (e) {
-        if (!e.target.id) {
-            if (e.target.parentNode.id === "enter") {
-                model.calc();
-            } else if (e.target.parentNode.id === "clear") {
-               model.clear();
-            } else {
-                model.addInput(e.target.parentNode.id);
-            }
-        } else if (e.target.id === "enter") {
+        if (e.target.id === "solve") {
             model.calc();
-        } else if(e.target.id === "clear") {
-            model.clear();
-        } else {
+        } else if (e.target.id === "clear") {
+            model.clear(false);
+        } else if (e.target.id === "clearhistory") {
+            model.clear(true);
+        } else if (e.target.id) {
             model.addInput(e.target.id);
+        } else if (e.target.parentNode.id) {
+            model.addInput(e.target.parentNode.id);
         }
     },
 
@@ -173,3 +197,4 @@ var handlers = {
         }
     }
 };
+

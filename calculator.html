@@ -6,8 +6,14 @@
     <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
     <link rel="stylesheet" href="cssreset.css">
     <link rel="stylesheet" href="styles.css">
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="calculator.js"></script>
 </head>
 <body onkeyup="handlers.findKey(event)">
+
     <div class="calculator">
         <div class="display">
             <div class="displayInput" id="displayLine1"></div>
@@ -18,52 +24,53 @@
             <div class="displayHistory" id="displayLine6"></div>
             <div class="displayHistory" id="displayLine7"></div>
         </div>
+
         <div class="keypad" onclick="handlers.findId(event)">
 
-            <button class="advancedfunctionKey" id = "xToTheNegativeOne"><p>x<sup>-1</sup></p></button>
-            <button class="advancedfunctionKey" id = "sineInverse"><p>SIN<sup>-1</sup></p></button>
-            <button class="advancedfunctionKey" id = "cosineInverse"><p>COS<sup>-1</sup></p></button>
-            <button class="advancedfunctionKey" id = "tangentInverse"><p>TAN<sup>-1</sup></p></button>
-            <button class="advancedfunctionKey" d="PI"><p>pi</p></button>
+            <button class="advancedfunctionKey" id = "xToTheNegativeOne">x<sup>-1</sup></button>
+            <button class="advancedfunctionKey" id = "sineInverse">SIN<sup>-1</sup></button>
+            <button class="advancedfunctionKey" id = "cosineInverse">COS<sup>-1</sup></button>
+            <button class="advancedfunctionKey" id = "tangentInverse">TAN<sup>-1</sup></button>
+            <button class="advancedfunctionKey" id="PI">pi</button>
 
-            <button class="advancedfunctionKey" id = "xsquared"><p>x<sup>2</sup></p></button>
-            <button class="advancedfunctionKey" id = "sine"><p>SIN</p></button>
-            <button class="advancedfunctionKey" id = "cosine"><p>COS</p></button>
-            <button class="advancedfunctionKey" id = "tangent"><p>TAN</p></button>
-            <button class="advancedfunctionKey" id = "power"><p>^</p></button>
+            <button class="advancedfunctionKey" id = "xsquared">x<sup>2</sup></button>
+            <button class="advancedfunctionKey" id = "sine">SIN</button>
+            <button class="advancedfunctionKey" id = "cosine">COS</button>
+            <button class="advancedfunctionKey" id = "tangent">TAN</button>
+            <button class="advancedfunctionKey" id = "power">^</button>
 
-            <button class="advancedfunctionKey" id = "LOG"><p>LOG</p></button>
-            <button class="advancedfunctionKey" id = "squareroot"><p>&radic;</p></button>
-            <button class="advancedfunctionKey" id = "leftParen"><p>(</p></button>
-            <button class="advancedfunctionKey" id = "rightParen"><p>)</p></button>
-            <button class="functionKey" id = "divide"><p>&divide;</p></button>
+            <button class="advancedfunctionKey" id = "LOG">LOG</button>
+            <button class="advancedfunctionKey" id = "squareroot">&radic;</button>
+            <button class="advancedfunctionKey" id = "leftParen">(</button>
+            <button class="advancedfunctionKey" id = "rightParen">)</button>
+            <button class="functionKey" id = "divide">&divide;</button>
 
-            <button class="advancedfunctionKey" id = "e"><p>e</p></button>
-            <button class="numberKey" id = "7"><p>7</p></button>
-            <button class="numberKey" id = "8"><p>8</p></button>
-            <button class="numberKey" id = "9"><p>9</p></button>
-            <button class="functionKey" id = "times"><p>X</p></button>
+            <button class="advancedfunctionKey" id = "e">e</button>
+            <button class="numberKey" id = "7">7</button>
+            <button class="numberKey" id = "8">8</button>
+            <button class="numberKey" id = "9">9</button>
+            <button class="functionKey" id = "times">X</button>
 
-            <button class="advancedfunctionKey" id = "LN"><p>LN</p></button>
-            <button class="numberKey" id = "4"><p>4</p></button>
-            <button class="numberKey" id = "5"><p>5</p></button>
-            <button class="numberKey" id = "6"><p>6</p></button>
-            <button class="functionKey" id = "minus"><p>-</p></button>
+            <button class="advancedfunctionKey" id = "LN">LN</button>
+            <button class="numberKey" id = "4">4</button>
+            <button class="numberKey" id = "5">5</button>
+            <button class="numberKey" id = "6">6</button>
+            <button class="functionKey" id = "minus">-</button>
 
 
-            <button class="clearKey" id = "clearhistory"><p>Clear All</p></button>
-            <button class="numberKey" id = "1"><p>1</p></button>
-            <button class="numberKey" id = "2"><p>2</p></button>
-            <button class="numberKey" id = "3"><p>3</p></button>
-            <button class="functionKey" id = "plus"><p>+</p></button>
+            <button class="clearKey" id = "clearhistory">Clear All</button>
+            <button class="numberKey" id = "1">1</button>
+            <button class="numberKey" id = "2">2</button>
+            <button class="numberKey" id = "3">3</button>
+            <button class="functionKey" id = "plus">+</button>
 
-            <button class="clearKey" id = "clear"><p>Clear</p></button>
-            <button class="numberKey" id = "0"><p>0</p></button>
-            <button class="numberKey" id = "period"><p>.</p></button>
-            <button class="numberKey" id = "negative"><p>(-)</p></button>
-            <button class="functionKey" id = "enter"><p>Solve</p></button>
+            <button class="clearKey" id = "clear">Clear</button>
+            <button class="numberKey" id = "0">0</button>
+            <button class="numberKey" id = "period">.</button>
+            <button class="numberKey" id = "negative">(-)</button>
+            <button class="functionKey" id = "solve">Solve</button>
         </div>
     </div>
-    <script src="calculator.js"></script>
+
 </body>
 </html>

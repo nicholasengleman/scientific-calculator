@@ -78,7 +78,7 @@ Display Styles
 }
 
 .displayHistory h3 {
-    color: grey;
+    color: green;
     display: inline-block;
 }
 
@@ -86,8 +86,11 @@ Display Styles
 .display sup {
     color: blue;
     vertical-align: super;
-    font-size:  20px;
+    font-size:  25px;
+}
 
+.display i {
+    color: blue;
 }
 
 

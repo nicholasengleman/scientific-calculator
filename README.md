@@ -12,9 +12,7 @@ This calculator was inspired by the Windows 10 Scientific Calculator with the fo
 ##Features to add
 1. all operators
 2. fix Keyboard bugs
-3. night mode
 4. add error checking for illegal operations
-5. cursor
 
 
 

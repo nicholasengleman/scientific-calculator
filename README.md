@@ -12,8 +12,8 @@ This calculator was inspired by the Windows 10 Scientific Calculator with the fo
 
 ##Features to add
 1. fix Keyboard bugs
-2. add error checking for illegal operations
-3. Fix Nesting Bugs
+
+
 
 ##Bugs
 1.

@@ -47,6 +47,9 @@ var model = {
             this.calcInsideParenthesis();
         }
 
+
+
+
         render.displayInput();
         $("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
         this.shiftHistory(this.equation);
@@ -63,24 +66,39 @@ var model = {
             if (model.displayCurrent[e] === "leftParen") {
                 start = e;
                 foundLeftParen = true;
+                break;
             }
         }
-        for (var i = start; i < model.displayCurrent.length; i++) {
+        for (var i = start; i <= model.displayCurrent.length; i++) {
             if (model.displayCurrent[i] === "rightParen") {
                 end = i;
                 foundRightParen = true;
+                break;
             }
         }
+
+
         return [start, end, foundLeftParen, foundRightParen];
     },
 
 
 
+
+
     calcInsideParenthesis: function () {
         var i, result;
+        var rightParenLocation = 1000;
+        var leftParenLocation = 1000;
+        var foundLeftParentLocation = false;
+        var foundRightParentLocation = false;
+        leftParenLocation = this.findParenthesis()[0];
+        rightParenLocation = this.findParenthesis()[1];
+        foundLeftParentLocation = this.findParenthesis()[2];
+        foundRightParentLocation = this.findParenthesis()[3];
+        console.log("first Paren Location: "+leftParenLocation+" second Paren Location: "+rightParenLocation+" found Left: "+foundLeftParentLocation+" found Right: "+foundRightParentLocation);
         //translates constants and factorial
-        console.log(model.displayCurrent);
-        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+
+        for (i = leftParenLocation; i <= rightParenLocation; i++) {
             switch (this.displayCurrent[i]) {
                 case "PI":
                     if (!isNaN(this.displayCurrent[i - 1])) {
@@ -106,185 +124,208 @@ var model = {
                     }
                     if (!isNaN(this.displayCurrent[i + 1])) {
                         this.displayCurrent.splice(i - 1, 2, factorialResult, "multiply");
+                        rightParenLocation = rightParenLocation - 1;
                     } else {
                         this.displayCurrent.splice(i - 1, 2, factorialResult);
+                        rightParenLocation = rightParenLocation - 1;
                     }
                     break;
                 }
             }
+
+
 
 
 
         //computes powers
-        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+        for (i = leftParenLocation; i <= rightParenLocation; i++) {
             switch (this.displayCurrent[i]) {
-            case "xToTheNegativeOne":
-                this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), -1));
-                i--;
-                break;
-            case "xsquared":
-                this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), 2));
-                i--;
-                break;
-            case "power":
-                this.displayCurrent.splice(i - 1, 4, Math.pow(parseFloat(this.displayCurrent[i - 1]), parseFloat(this.displayCurrent[i + 2])));
-                i--;
-                break;
-            case "squareroot":
-                if (!isNaN(this.displayCurrent[i - 1])) {
-                    this.displayCurrent.splice(i, 3, "multiply", Math.sqrt(parseFloat(this.displayCurrent[i + 2])));
+                case "xToTheNegativeOne":
+                    this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), -1));
                     i--;
                     break;
-                }
-                else {
-                    this.displayCurrent.splice(i, 3, Math.sqrt(parseFloat(this.displayCurrent[i + 2])));
+                case "xsquared":
+                    this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), 2));
                     i--;
                     break;
-                }
-            case "sine":
-                if (!isNaN(this.displayCurrent[i - 1])) {
-                    this.displayCurrent.splice(i, 3, "multiply", Math.sin(parseFloat(this.displayCurrent[i + 2])));
+                case "power":
+                    this.displayCurrent.splice(i - 1, 4, Math.pow(parseFloat(this.displayCurrent[i - 1]), parseFloat(this.displayCurrent[i + 2])));
                     i--;
                     break;
-                } else {
-                    this.displayCurrent.splice(i, 3, Math.sin(parseFloat(this.displayCurrent[i + 2])));
-                    i--;
-                    break;
-                }
-            case "cosine":
-                if (!isNaN(this.displayCurrent[i - 1])) {
-                    this.displayCurrent.splice(i, 3, "multiply", Math.cos(parseFloat(this.displayCurrent[i + 2])));
-                    i--;
-                    break;
-                } else {
-                    this.displayCurrent.splice(i, 3, Math.cos(parseFloat(this.displayCurrent[i + 2])));
-                    i--;
-                    break;
-                }
-            case "tangent":
-                if (!isNaN(this.displayCurrent[i - 1])) {
-                    this.displayCurrent.splice(i, 3, "multiply", Math.tan(parseFloat(this.displayCurrent[i + 2])));
-                    i--;
-                    break;
-                } else {
-                    this.displayCurrent.splice(i, 3, Math.tan(parseFloat(this.displayCurrent[i + 2])));
-                    i--;
-                    break;
-                }
-            case "sineInverse":
-                result = Math.asin(this.displayCurrent[i + 2]);
-                if(result) {
+                case "squareroot":
                     if (!isNaN(this.displayCurrent[i - 1])) {
-                        this.displayCurrent.splice(i, 3, "multiply", result);
-                        i--;
-                        break;
-                    } else {
-                        this.displayCurrent.splice(i, 3, result);
+                        this.displayCurrent.splice(i, 3, "multiply", Math.sqrt(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
                     }
-                } else {
-                    model.displayCurrent = [];
-                    model.combineWithNextInput = false;
-                    model.displayCurrent.push("NaN");
-                    break;
-                }
-                i--;
-            case "cosineInverse":
-                result = Math.acos(this.displayCurrent[i + 2]);
-                if(result) {
-                    if (!isNaN(this.displayCurrent[i - 1])) {
-                        this.displayCurrent.splice(i, 3, "multiply", result);
-                        i--;
-                        break;
-                    } else {
-                        this.displayCurrent.splice(i, 3, result);
+                    else {
+                        this.displayCurrent.splice(i, 3, Math.sqrt(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
                     }
-                } else {
-                    model.displayCurrent = [];
-                    model.combineWithNextInput = false;
-                    model.displayCurrent.push("NaN");
-                    break;
-                }
-                i--;
-            case "tangentInverse":
-                if (!isNaN(this.displayCurrent[i - 1])) {
-                    this.displayCurrent.splice(i, 3, "multiply", Math.atan(parseFloat(this.displayCurrent[i + 2])));
+                case "sine":
+                    if (!isNaN(this.displayCurrent[i - 1])) {
+                        this.displayCurrent.splice(i, 3, "multiply", Math.sin(parseFloat(this.displayCurrent[i + 2])));
+                        i--;
+                        break;
+                    } else {
+                        this.displayCurrent.splice(i, 3, Math.sin(this.displayCurrent[i + 2]));
+                        i--;
+                        break;
+                    }
+                case "cosine":
+                    if (!isNaN(this.displayCurrent[i - 1])) {
+                        this.displayCurrent.splice(i, 3, "multiply", Math.cos(parseFloat(this.displayCurrent[i + 2])));
+                        i--;
+                        break;
+                    } else {
+                        this.displayCurrent.splice(i, 3, Math.cos(parseFloat(this.displayCurrent[i + 2])));
+                        rightParenLocation = rightParenLocation - 2;
+                        i--;
+                        break;
+                    }
+                case "tangent":
+                    if (!isNaN(this.displayCurrent[i - 1])) {
+                        this.displayCurrent.splice(i, 3, "multiply", Math.tan(parseFloat(this.displayCurrent[i + 2])));
+                        i--;
+                        break;
+                    } else {
+                        this.displayCurrent.splice(i, 3, Math.tan(parseFloat(this.displayCurrent[i + 2])));
+                        i--;
+                        break;
+                    }
+                case "sineInverse":
+                    result = Math.asin(this.displayCurrent[i + 2]);
+                    if(result) {
+                        if (!isNaN(this.displayCurrent[i - 1])) {
+                            this.displayCurrent.splice(i, 3, "multiply", result);
+                            i--;
+                            break;
+                        } else {
+                            this.displayCurrent.splice(i, 3, result);
+                            i--;
+                            break;
+                        }
+                    } else {
+                        model.displayCurrent = [];
+                        model.combineWithNextInput = false;
+                        model.displayCurrent.push("NaN");
+                        break;
+                    }
                     i--;
-                    break;
-                } else {
-                    this.displayCurrent.splice(i, 3, Math.atan(parseFloat(this.displayCurrent[i + 2])));
+                case "cosineInverse":
+                    result = Math.acos(this.displayCurrent[i + 2]);
+                    if(result) {
+                        if (!isNaN(this.displayCurrent[i - 1])) {
+                            this.displayCurrent.splice(i, 3, "multiply", result);
+                            rightParenLocation = rightParenLocation - 2;
+                            i--;
+                            break;
+                        } else {
+                            this.displayCurrent.splice(i, 3, result);
+                            rightParenLocation = rightParenLocation - 2;
+                            i--;
+                            break;
+                        }
+                    } else {
+                        model.displayCurrent = [];
+                        model.combineWithNextInput = false;
+                        model.displayCurrent.push("NaN");
+                        break;
+                    }
                     i--;
-                    break;
+                case "tangentInverse":
+                    if (!isNaN(this.displayCurrent[i - 1])) {
+                        this.displayCurrent.splice(i, 3, "multiply", Math.atan(parseFloat(this.displayCurrent[i + 2])));
+                        rightParenLocation = rightParenLocation - 2;
+                        i--;
+                        break;
+                    } else {
+                        this.displayCurrent.splice(i, 3, Math.atan(parseFloat(this.displayCurrent[i + 2])));
+                        rightParenLocation = rightParenLocation - 2;
+                        i--;
+                        break;
+                    }
                 }
-            }
         }
-
 
 
         //computes multiplication and division
-        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+        for (i = leftParenLocation; i <= rightParenLocation; i++) {
             switch (this.displayCurrent[i]) {
-            case "divide":
-                if(this.displayCurrent[i + 1]!=0) {
-                    this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1]));
+                case "divide":
+                    if(this.displayCurrent[i + 1]!=0) {
+                        this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1]));
+                        rightParenLocation = rightParenLocation - 2;
+                        i--;
+                        break;
+                    } else {
+                        model.displayCurrent = [];
+                        model.combineWithNextInput = false;
+                        model.displayCurrent.push("Can't divide by 0");
+                        break;
+                    }
+                case "multiply":
+                    this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1]));
+                    rightParenLocation = rightParenLocation - 3;
                     i--;
                     break;
-                } else {
-                    model.displayCurrent = [];
-                    model.combineWithNextInput = false;
-                    model.displayCurrent.push("Can't divide by 0");
-                    break;
                 }
-            case "multiply":
-                this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1]));
-                i--;
-                break;
-            }
         }
 
+        console.log("B4: "+model.displayCurrent);
+
         //computes addition and subtraction
-        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+        for (i = leftParenLocation; i <= rightParenLocation; i++) {
             switch (this.displayCurrent[i]) {
             case "plus":
                 this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) + parseFloat(this.displayCurrent[i + 1]));
+                rightParenLocation = rightParenLocation - 2;
                 i--;
                 break;
             case "minus":
                 this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) - parseFloat(this.displayCurrent[i + 1]));
+                rightParenLocation = rightParenLocation - 2;
                 i--;
                 break;
             }
         }
 
 
+
+
           //removes Parenthesis
-            if (this.findParenthesis()[2] === true) {
-                var previousCharacter = this.displayCurrent[this.findParenthesis()[0] - 1];
+            if (foundLeftParentLocation  === true) {
+                var previousCharacter = this.displayCurrent[leftParenLocation - 1];
                 if (previousCharacter == "minus" ||
                     previousCharacter == "plus" ||
                     previousCharacter == "divide" ||
                     previousCharacter == "multiply" ||
+                    previousCharacter == "leftParen" ||
                     previousCharacter == null) {
-                        this.displayCurrent.splice(this.findParenthesis()[0], 1);
+                        this.displayCurrent.splice(leftParenLocation, 1);
                     } else {
-                        this.displayCurrent.splice(this.findParenthesis()[0], 1, "multiply");
+                        this.displayCurrent.splice(leftParenLocation, 1, "multiply");
                     }
                 }
-            if (this.findParenthesis()[3] === true) {
-                var nextCharacter = this.displayCurrent[this.findParenthesis()[1] + 1];
+
+            if (foundRightParentLocation === true) {
+             console.log("right paren location: "+rightParenLocation);
+                var nextCharacter = this.displayCurrent[rightParenLocation + 1];
                 if (nextCharacter == "minus" ||
                     nextCharacter == "plus" ||
                     nextCharacter == "divide" ||
                     nextCharacter == "multiply" ||
+                    nextCharacter == "rightParen" ||
+                    nextCharacter == "power" ||
                     nextCharacter == null) {
-                        this.displayCurrent.splice(this.findParenthesis()[1], 1);
+                        this.displayCurrent.splice(rightParenLocation, 1);
                     } else {
-                        this.displayCurrent.splice(this.findParenthesis()[1], 1, "multiply");
+                        this.displayCurrent.splice(rightParenLocation, 1, "multiply");
                 }
             }
+
+        console.log("after removal: "+model.displayCurrent);
 
 
 
@@ -321,13 +362,15 @@ var render = {
         $("#displayLine1").removeClass("displayAnswer").addClass("displayInput");
         var displayLine1 = document.getElementById("displayLine1");
         displayLine1.innerHTML = "";
-        var usePower;
-        model.displayCurrent.forEach(function (input) {
+        var usePower, leftParenCount=0, rightParenCount=0;
 
+        model.displayCurrent.forEach(function (input) {
             if (input === "power") {
                 usePower = true;
             }
             if (usePower) {
+                if(input==="leftParen")  { leftParenCount++;  }
+                if(input==="rightParen") { rightParenCount++; }
                 if (render.translateOperator(input) === input) {
                     displayLine1.innerHTML += "<sup>" + render.translateOperator(input) + "</sup>";
                 }
@@ -342,7 +385,7 @@ var render = {
                     displayLine1.innerHTML += "<h3>" + render.translateOperator(input) + "</h3>";
                 }
             }
-            if (input === "rightParen") {
+            if (usePower===true && rightParenCount!==0 && rightParenCount===leftParenCount) {
                 usePower = false;
             }
         });

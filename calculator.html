@@ -14,7 +14,18 @@
 </head>
 <body onkeyup="handlers.findKey(event)">
 
-    <div class="calculator">
+<section class="features">
+        <h2>Key Features</h2>
+        <ul>
+            <li>Follows "Order of Operations/Precedence"</li>
+            <li>Understands nested parenthesis</li>
+            <li>Keyboard support</li>
+            <li>Dynamic Font Scaling for long equations</li>
+            <li>History view of last 6 operations</li>
+        </ul>
+</section>
+
+    <section class="calculator">
         <div class="display">
             <div class="displayInput" id="displayLine1"></div><br>
             <div class="displayHistory" id="displayLine2"></div><br>
@@ -70,7 +81,16 @@
             <button class="numberKey" id = "-">(-)</button>
             <button class="functionKey" id = "solve">Solve</button>
         </div>
-    </div>
+    </section>
 
+<section class="instructions">
+    <h2>Equations To Try</h2>
+    <ul>
+        <li>-63+3</li>
+        <li>-63+3(3.4 x 7)</li>
+        <li>(2 / 3)^SIN(-63+3(3.4 x 7)</li>
+        <li>((2 / 3)^SIN(-63+3(3.4 x 7))/4^2</li>
+    </ul>
+</section>
 </body>
 </html>

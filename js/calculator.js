@@ -8,7 +8,7 @@ var model = {
     combineWithNextInput: false,
 
 
-    addInput: function (input, addParenthesis) {
+    addInput: function (input) {
         if (!isNaN(input) && this.combineWithNextInput) {
             this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + input;
         } else if (!isNaN(input) && !this.combineWithNextInput) {
@@ -31,11 +31,20 @@ var model = {
             this.combineWithNextInput = true;
         }
 
-        if (addParenthesis) {
-            this.displayCurrent.push("leftParen");
+        console.log(this.displayCurrent);
+        render.displayInput();
+    },
+
+    backspace: function () {
+        if(!isNaN(this.displayCurrent[this.displayCurrent.length - 1]) && this.displayCurrent[this.displayCurrent.length - 1]>9) {
+            var lastItem = String(this.displayCurrent[this.displayCurrent.length - 1]).split("");
+            lastItem.pop();
+            this.displayCurrent[this.displayCurrent.length - 1] = lastItem.join("");
+        } else if(this.displayCurrent.length < 2) {
+            this.displayCurrent[0] = "";
+        } else {
+            this.displayCurrent.pop();
         }
-
-
         render.displayInput();
     },
 
@@ -46,9 +55,6 @@ var model = {
         while(this.displayCurrent.length>1) {
             this.calcInsideParenthesis();
         }
-
-
-
 
         render.displayInput();
         $("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
@@ -77,7 +83,6 @@ var model = {
             }
         }
 
-
         return [start, end, foundLeftParen, foundRightParen];
     },
 
@@ -87,18 +92,9 @@ var model = {
 
     calcInsideParenthesis: function () {
         var i, result;
-        var rightParenLocation = 1000;
-        var leftParenLocation = 1000;
-        var foundLeftParentLocation = false;
-        var foundRightParentLocation = false;
-        leftParenLocation = this.findParenthesis()[0];
-        rightParenLocation = this.findParenthesis()[1];
-        foundLeftParentLocation = this.findParenthesis()[2];
-        foundRightParentLocation = this.findParenthesis()[3];
-        console.log("first Paren Location: "+leftParenLocation+" second Paren Location: "+rightParenLocation+" found Left: "+foundLeftParentLocation+" found Right: "+foundRightParentLocation);
-        //translates constants and factorial
 
-        for (i = leftParenLocation; i <= rightParenLocation; i++) {
+        //translates constants and factorial
+        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
                 case "PI":
                     if (!isNaN(this.displayCurrent[i - 1])) {
@@ -124,21 +120,17 @@ var model = {
                     }
                     if (!isNaN(this.displayCurrent[i + 1])) {
                         this.displayCurrent.splice(i - 1, 2, factorialResult, "multiply");
-                        rightParenLocation = rightParenLocation - 1;
+                        this.findParenthesis()[1] = this.findParenthesis()[1] - 1;
                     } else {
                         this.displayCurrent.splice(i - 1, 2, factorialResult);
-                        rightParenLocation = rightParenLocation - 1;
+                        this.findParenthesis()[1] = this.findParenthesis()[1] - 1;
                     }
                     break;
                 }
             }
 
-
-
-
-
         //computes powers
-        for (i = leftParenLocation; i <= rightParenLocation; i++) {
+        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
                 case "xToTheNegativeOne":
                     this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), -1));
@@ -180,7 +172,6 @@ var model = {
                         break;
                     } else {
                         this.displayCurrent.splice(i, 3, Math.cos(parseFloat(this.displayCurrent[i + 2])));
-                        rightParenLocation = rightParenLocation - 2;
                         i--;
                         break;
                     }
@@ -218,12 +209,10 @@ var model = {
                     if(result) {
                         if (!isNaN(this.displayCurrent[i - 1])) {
                             this.displayCurrent.splice(i, 3, "multiply", result);
-                            rightParenLocation = rightParenLocation - 2;
                             i--;
                             break;
                         } else {
                             this.displayCurrent.splice(i, 3, result);
-                            rightParenLocation = rightParenLocation - 2;
                             i--;
                             break;
                         }
@@ -237,12 +226,10 @@ var model = {
                 case "tangentInverse":
                     if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 3, "multiply", Math.atan(parseFloat(this.displayCurrent[i + 2])));
-                        rightParenLocation = rightParenLocation - 2;
                         i--;
                         break;
                     } else {
                         this.displayCurrent.splice(i, 3, Math.atan(parseFloat(this.displayCurrent[i + 2])));
-                        rightParenLocation = rightParenLocation - 2;
                         i--;
                         break;
                     }
@@ -251,12 +238,11 @@ var model = {
 
 
         //computes multiplication and division
-        for (i = leftParenLocation; i <= rightParenLocation; i++) {
+        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
                 case "divide":
-                    if(this.displayCurrent[i + 1]!=0) {
+                    if(this.displayCurrent[i + 1]!==0) {
                         this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1]));
-                        rightParenLocation = rightParenLocation - 2;
                         i--;
                         break;
                     } else {
@@ -267,68 +253,63 @@ var model = {
                     }
                 case "multiply":
                     this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1]));
-                    rightParenLocation = rightParenLocation - 3;
                     i--;
                     break;
                 }
         }
 
-        console.log("B4: "+model.displayCurrent);
 
         //computes addition and subtraction
-        for (i = leftParenLocation; i <= rightParenLocation; i++) {
+        for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
             case "plus":
                 this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) + parseFloat(this.displayCurrent[i + 1]));
-                rightParenLocation = rightParenLocation - 2;
                 i--;
                 break;
             case "minus":
                 this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) - parseFloat(this.displayCurrent[i + 1]));
-                rightParenLocation = rightParenLocation - 2;
                 i--;
                 break;
             }
         }
+        this.removesParenthesis();
+    },
 
+    removesParenthesis: function() {
+        var leftParenLocation =  this.findParenthesis()[0];
+        var rightParenLocation =  this.findParenthesis()[1];
+        var foundleftParenLocation =  this.findParenthesis()[2];
+        var foundrightParenLocation =  this.findParenthesis()[3];
 
-
-
-          //removes Parenthesis
-            if (foundLeftParentLocation  === true) {
-                var previousCharacter = this.displayCurrent[leftParenLocation - 1];
-                if (previousCharacter == "minus" ||
-                    previousCharacter == "plus" ||
-                    previousCharacter == "divide" ||
-                    previousCharacter == "multiply" ||
-                    previousCharacter == "leftParen" ||
-                    previousCharacter == null) {
-                        this.displayCurrent.splice(leftParenLocation, 1);
-                    } else {
-                        this.displayCurrent.splice(leftParenLocation, 1, "multiply");
-                    }
-                }
-
-            if (foundRightParentLocation === true) {
-             console.log("right paren location: "+rightParenLocation);
-                var nextCharacter = this.displayCurrent[rightParenLocation + 1];
-                if (nextCharacter == "minus" ||
-                    nextCharacter == "plus" ||
-                    nextCharacter == "divide" ||
-                    nextCharacter == "multiply" ||
-                    nextCharacter == "rightParen" ||
-                    nextCharacter == "power" ||
-                    nextCharacter == null) {
-                        this.displayCurrent.splice(rightParenLocation, 1);
-                    } else {
-                        this.displayCurrent.splice(rightParenLocation, 1, "multiply");
-                }
+        if (foundleftParenLocation === true) {
+            var previousCharacter = this.displayCurrent[leftParenLocation  - 1];
+            if (previousCharacter == "minus" ||
+                previousCharacter == "plus" ||
+                previousCharacter == "divide" ||
+                previousCharacter == "multiply" ||
+                previousCharacter == "leftParen" ||
+                previousCharacter == null) {
+                this.displayCurrent.splice(leftParenLocation , 1);
+                rightParenLocation = rightParenLocation - 1;
+            } else {
+                this.displayCurrent.splice(leftParenLocation , 1, "multiply");
             }
+        }
 
-        console.log("after removal: "+model.displayCurrent);
-
-
-
+        if (foundrightParenLocation === true) {
+            var nextCharacter = this.displayCurrent[rightParenLocation + 1];
+            if (nextCharacter == "minus" ||
+                nextCharacter == "plus" ||
+                nextCharacter == "divide" ||
+                nextCharacter == "multiply" ||
+                nextCharacter == "rightParen" ||
+                nextCharacter == "power" ||
+                nextCharacter == null) {
+                this.displayCurrent.splice(rightParenLocation, 1);
+            } else {
+                this.displayCurrent.splice(rightParenLocation, 1, "multiply");
+            }
+        }
     },
 
     clear: function (clearAllHistory) {
@@ -465,7 +446,6 @@ var handlers = {
         } else {
             id = e.target.parentNode.id;
         }
-
         if (id === "solve") {
             model.calc();
         } else if (id === "clear") {
@@ -491,46 +471,67 @@ var handlers = {
     },
 
     findKey: function (e) {
+
+        if (e.keyCode === 48 || e.keyCode === 96) {
+            model.addInput("0");
+        }
         if (e.keyCode === 49 || e.keyCode === 97) {
-            model.addInput(1, true);
+            model.addInput("1");
         }
         if (e.keyCode === 50 || e.keyCode === 98) {
-            model.addInput(2, true);
+            model.addInput("2");
         }
         if (e.keyCode === 51 || e.keyCode === 99) {
-            model.addInput(3, true);
+            model.addInput("3");
         }
         if (e.keyCode === 52 || e.keyCode === 100) {
-            model.addInput(4, true);
+            model.addInput("4");
         }
         if (e.keyCode === 53 || e.keyCode === 101) {
-            model.addInput(5, true);
+            model.addInput("5");
         }
         if (e.keyCode === 54 || e.keyCode === 102) {
-            model.addInput(6, true);
+            model.addInput("6");
         }
         if (e.keyCode === 55 || e.keyCode === 103) {
-            model.addInput(7, true);
+            model.addInput("7");
         }
-        if (e.keyCode === 56 || e.keyCode === 104) {
-            model.addInput(8, true);
+        if ((!e.shiftKey && e.keyCode === 56) || e.keyCode === 104) {
+            model.addInput("8");
         }
-        if (e.keyCode === 57 || e.keyCode === 105) {
-            model.addInput(9, true);
+        if ((!e.shiftKey && e.keyCode === 57) || e.keyCode === 46) {
+            model.addInput("9");
         }
-        if (e.keyCode === 107) {
-            model.addInput("plus", false);
+        if (e.keyCode === 190) {
+            model.addInput("period");
         }
-        if (e.keyCode === 109) {
-            model.addInput("minus", false);
+        if ((e.shiftKey && e.keyCode === 187) || e.keyCode === 107) {
+            model.addInput("plus");
         }
-        if (e.keyCode === 186 || e.keyCode === 106) {
-            model.addInput("multiply", false);
+        if ((e.shiftKey && e.keyCode === 189) || e.keyCode === 109) {
+            model.addInput("minus");
+        }
+        if ((e.shiftKey && e.keyCode === 56) || e.keyCode === 106) {
+            model.addInput("multiply");
         }
         if (e.keyCode === 191 || e.keyCode === 111) {
-            model.addInput("divide", false);
+            model.addInput("divide");
+        }
+        if (e.shiftKey && e.keyCode === 57) {
+            model.addInput("leftParen");
+        }
+        if (e.shiftKey && e.keyCode === 48) {
+            model.addInput("rightParen");
+        }
+        if (!e.shiftKey && e.keyCode === 189) {
+            model.addInput("-");
+        }
+        if (e.keyCode === 8) {
+            model.backspace();
+        }
+        if (e.keyCode === 13) {
+            model.calc();
         }
     }
-}
-;
+};
 

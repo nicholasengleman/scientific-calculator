@@ -8,7 +8,7 @@ var model = {
     combineWithNextInput: false,
 
 
-    addInput: function (input) {
+    addInput: function (input, addParen) {
         if (!isNaN(input) && this.combineWithNextInput) {
             this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + input;
         } else if (!isNaN(input) && !this.combineWithNextInput) {
@@ -29,6 +29,10 @@ var model = {
 
         if(input ==="-") {
             this.combineWithNextInput = true;
+        }
+
+        if(addParen) {
+            this.displayCurrent.push("leftParen");
         }
 
         console.log(this.displayCurrent);
@@ -96,67 +100,67 @@ var model = {
         //translates constants and factorial
         for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
-                case "PI":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+            case "PI":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 1, "multiply", 3.14159);
                         break;
                     } else {
                         this.displayCurrent.splice(i, 1, 3.14159);
                         break;
                     }
-                case "E":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+            case "E":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 1, "multiply", 2.71828);
                         break;
                     }
-                    else {
+                else {
                         this.displayCurrent.splice(i, 1, 2.71828);
                         break;
                     }
-                case "factorial":
-                    var e,factorialResult = 1;
-                    for(e = this.displayCurrent[i - 1]; e>1; e--) {
+            case "factorial":
+                var e,factorialResult = 1;
+                for(e = this.displayCurrent[i - 1]; e>1; e--) {
                         factorialResult = factorialResult*e;
                     }
-                    if (!isNaN(this.displayCurrent[i + 1])) {
+                if (!isNaN(this.displayCurrent[i + 1])) {
                         this.displayCurrent.splice(i - 1, 2, factorialResult, "multiply");
                         this.findParenthesis()[1] = this.findParenthesis()[1] - 1;
                     } else {
                         this.displayCurrent.splice(i - 1, 2, factorialResult);
                         this.findParenthesis()[1] = this.findParenthesis()[1] - 1;
                     }
-                    break;
-                }
+                break;
             }
+        }
 
         //computes powers
         for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
-                case "xToTheNegativeOne":
-                    this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), -1));
-                    i--;
-                    break;
-                case "xsquared":
-                    this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), 2));
-                    i--;
-                    break;
-                case "power":
-                    this.displayCurrent.splice(i - 1, 4, Math.pow(parseFloat(this.displayCurrent[i - 1]), parseFloat(this.displayCurrent[i + 2])));
-                    i--;
-                    break;
-                case "squareroot":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+            case "xToTheNegativeOne":
+                this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), -1));
+                i--;
+                break;
+            case "xsquared":
+                this.displayCurrent.splice(i - 1, 2, Math.pow(parseFloat(this.displayCurrent[i - 1]), 2));
+                i--;
+                break;
+            case "power":
+                this.displayCurrent.splice(i - 1, 4, Math.pow(parseFloat(this.displayCurrent[i - 1]), parseFloat(this.displayCurrent[i + 2])));
+                i--;
+                break;
+            case "squareroot":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 3, "multiply", Math.sqrt(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
                     }
-                    else {
+                else {
                         this.displayCurrent.splice(i, 3, Math.sqrt(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
                     }
-                case "sine":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+            case "sine":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 3, "multiply", Math.sin(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
@@ -165,8 +169,8 @@ var model = {
                         i--;
                         break;
                     }
-                case "cosine":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+            case "cosine":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 3, "multiply", Math.cos(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
@@ -175,8 +179,8 @@ var model = {
                         i--;
                         break;
                     }
-                case "tangent":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+            case "tangent":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 3, "multiply", Math.tan(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
@@ -185,9 +189,9 @@ var model = {
                         i--;
                         break;
                     }
-                case "sineInverse":
-                    result = Math.asin(this.displayCurrent[i + 2]);
-                    if(result) {
+            case "sineInverse":
+                result = Math.asin(this.displayCurrent[i + 2]);
+                if(result) {
                         if (!isNaN(this.displayCurrent[i - 1])) {
                             this.displayCurrent.splice(i, 3, "multiply", result);
                             i--;
@@ -203,10 +207,10 @@ var model = {
                         model.displayCurrent.push("NaN");
                         break;
                     }
-                    i--;
-                case "cosineInverse":
-                    result = Math.acos(this.displayCurrent[i + 2]);
-                    if(result) {
+                i--;
+            case "cosineInverse":
+                result = Math.acos(this.displayCurrent[i + 2]);
+                if(result) {
                         if (!isNaN(this.displayCurrent[i - 1])) {
                             this.displayCurrent.splice(i, 3, "multiply", result);
                             i--;
@@ -222,9 +226,9 @@ var model = {
                         model.displayCurrent.push("NaN");
                         break;
                     }
-                    i--;
-                case "tangentInverse":
-                    if (!isNaN(this.displayCurrent[i - 1])) {
+                i--;
+            case "tangentInverse":
+                if (!isNaN(this.displayCurrent[i - 1])) {
                         this.displayCurrent.splice(i, 3, "multiply", Math.atan(parseFloat(this.displayCurrent[i + 2])));
                         i--;
                         break;
@@ -233,15 +237,15 @@ var model = {
                         i--;
                         break;
                     }
-                }
+            }
         }
 
 
         //computes multiplication and division
         for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
             switch (this.displayCurrent[i]) {
-                case "divide":
-                    if(this.displayCurrent[i + 1]!==0) {
+            case "divide":
+                if(this.displayCurrent[i + 1]!==0) {
                         this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1]));
                         i--;
                         break;
@@ -251,11 +255,11 @@ var model = {
                         model.displayCurrent.push("Can't divide by 0");
                         break;
                     }
-                case "multiply":
-                    this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1]));
-                    i--;
-                    break;
-                }
+            case "multiply":
+                this.displayCurrent.splice(i - 1, 3, parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1]));
+                i--;
+                break;
+            }
         }
 
 
@@ -283,12 +287,12 @@ var model = {
 
         if (foundleftParenLocation === true) {
             var previousCharacter = this.displayCurrent[leftParenLocation  - 1];
-            if (previousCharacter == "minus" ||
-                previousCharacter == "plus" ||
-                previousCharacter == "divide" ||
-                previousCharacter == "multiply" ||
-                previousCharacter == "leftParen" ||
-                previousCharacter == null) {
+            if (previousCharacter === "minus" ||
+                previousCharacter === "plus" ||
+                previousCharacter === "divide" ||
+                previousCharacter === "multiply" ||
+                previousCharacter === "leftParen" ||
+                previousCharacter === null) {
                 this.displayCurrent.splice(leftParenLocation , 1);
                 rightParenLocation = rightParenLocation - 1;
             } else {
@@ -298,13 +302,13 @@ var model = {
 
         if (foundrightParenLocation === true) {
             var nextCharacter = this.displayCurrent[rightParenLocation + 1];
-            if (nextCharacter == "minus" ||
-                nextCharacter == "plus" ||
-                nextCharacter == "divide" ||
-                nextCharacter == "multiply" ||
-                nextCharacter == "rightParen" ||
-                nextCharacter == "power" ||
-                nextCharacter == null) {
+            if (nextCharacter === "minus" ||
+                nextCharacter === "plus" ||
+                nextCharacter === "divide" ||
+                nextCharacter === "multiply" ||
+                nextCharacter === "rightParen" ||
+                nextCharacter === "power" ||
+                nextCharacter === null) {
                 this.displayCurrent.splice(rightParenLocation, 1);
             } else {
                 this.displayCurrent.splice(rightParenLocation, 1, "multiply");
@@ -350,22 +354,24 @@ var render = {
                 usePower = true;
             }
             if (usePower) {
-                if(input==="leftParen")  { leftParenCount++;  }
-                if(input==="rightParen") { rightParenCount++; }
-                if (render.translateOperator(input) === input) {
-                    displayLine1.innerHTML += "<sup>" + render.translateOperator(input) + "</sup>";
+                if (input === "leftParen") {
+                    leftParenCount++;
                 }
-                else {
-                    displayLine1.innerHTML += "<sup><h3>" + render.translateOperator(input) + "</h3></sup>";
+                if (input === "rightParen") {
+                    rightParenCount++;
                 }
-            } else {
-                if (render.translateOperator(input) === input) {
-                    displayLine1.innerHTML += render.translateOperator(input);
-                }
-                else {
-                    displayLine1.innerHTML += "<h3>" + render.translateOperator(input) + "</h3>";
-                }
+                displayLine1.innerHTML += "<sup>" + render.translateOperator(input) + "</sup>";
             }
+            if(!usePower) {
+                if ((render.translateOperator(input) === input)) {
+                    displayLine1.innerHTML += render.translateOperator(input);
+                } else if(input==="leftParen" || input==="rightParen") {
+                    displayLine1.innerHTML += "<i>" + render.translateOperator(input) + "</i>";
+                } else {
+                    displayLine1.innerHTML += "<span>" + render.translateOperator(input) + "</span>";
+                    }
+                }
+
             if (usePower===true && rightParenCount!==0 && rightParenCount===leftParenCount) {
                 usePower = false;
             }
@@ -377,13 +383,13 @@ var render = {
     translateOperator: function (input) {
         switch (input.toString()) {
         case "divide":
-            return "<b>&divide;</b>";
+            return "&divide;";
         case "multiply":
-            return " <b>x</b> ";
+            return "x";
         case "minus":
-            return "<b>-</b>";
+            return "-";
         case "plus":
-            return "<b>+</b>";
+            return "+";
         case "xToTheNegativeOne":
             return "<sup>-1</sup>";
         case "xsquared":
@@ -411,9 +417,9 @@ var render = {
         case "squareroot":
             return "&radic;";
         case "leftParen":
-            return "<i>(</i>";
+            return "(";
         case "rightParen":
-            return "<i>)</i>";
+            return ")";
         case "period":
             return ".";
         case "-":
@@ -455,8 +461,8 @@ var handlers = {
         } else if (!isNaN(id)) {
             model.addInput(id, false);
         } else if (id === "period") {
-                model.addInput(id, false);
-            } else if ((id === "sine") ||
+            model.addInput(id, false);
+        } else if ((id === "sine") ||
                        (id === "cosine") ||
                        (id === "tangent") ||
                        (id === "squareroot") ||
@@ -472,7 +478,7 @@ var handlers = {
 
     findKey: function (e) {
 
-        if (e.keyCode === 48 || e.keyCode === 96) {
+        if (!e.shiftKey && (e.keyCode === 48 || e.keyCode === 96)) {
             model.addInput("0");
         }
         if (e.keyCode === 49 || e.keyCode === 97) {
@@ -490,7 +496,7 @@ var handlers = {
         if (e.keyCode === 53 || e.keyCode === 101) {
             model.addInput("5");
         }
-        if (e.keyCode === 54 || e.keyCode === 102) {
+        if (!e.shiftKey && (e.keyCode === 54 || e.keyCode === 102)) {
             model.addInput("6");
         }
         if (e.keyCode === 55 || e.keyCode === 103) {
@@ -514,6 +520,9 @@ var handlers = {
         if ((e.shiftKey && e.keyCode === 56) || e.keyCode === 106) {
             model.addInput("multiply");
         }
+        if (e.keyCode === 88) {
+            model.addInput("multiply");
+        }
         if (e.keyCode === 191 || e.keyCode === 111) {
             model.addInput("divide");
         }
@@ -522,6 +531,9 @@ var handlers = {
         }
         if (e.shiftKey && e.keyCode === 48) {
             model.addInput("rightParen");
+        }
+        if (e.shiftKey && e.keyCode === 54) {
+            model.addInput("power");
         }
         if (!e.shiftKey && e.keyCode === 189) {
             model.addInput("-");

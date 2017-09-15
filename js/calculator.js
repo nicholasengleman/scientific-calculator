@@ -276,6 +276,7 @@ var model = {
                 break;
             }
         }
+
         this.removesParenthesis();
     },
 
@@ -287,11 +288,13 @@ var model = {
 
         if (foundleftParenLocation === true) {
             var previousCharacter = this.displayCurrent[leftParenLocation  - 1];
+            console.log("previous charc" + previousCharacter);
             if (previousCharacter === "minus" ||
                 previousCharacter === "plus" ||
                 previousCharacter === "divide" ||
                 previousCharacter === "multiply" ||
                 previousCharacter === "leftParen" ||
+                previousCharacter === undefined  ||
                 previousCharacter === null) {
                 this.displayCurrent.splice(leftParenLocation , 1);
                 rightParenLocation = rightParenLocation - 1;
@@ -308,22 +311,31 @@ var model = {
                 nextCharacter === "multiply" ||
                 nextCharacter === "rightParen" ||
                 nextCharacter === "power" ||
+                nextCharacter === undefined ||
                 nextCharacter === null) {
                 this.displayCurrent.splice(rightParenLocation, 1);
             } else {
                 this.displayCurrent.splice(rightParenLocation, 1, "multiply");
             }
         }
+
     },
 
     clear: function (clearAllHistory) {
         this.displayCurrent = [];
         this.combineWithNextInput = false;
+        $("#displayLine1").css("font-size", "30px");
+        $("#displayLine1" + " span").css("font-size", "30px");
+        $("#displayLine1" + " i").css("font-size", "30px");
         if (clearAllHistory) {
             for (var i = 2; i < 8; i++) {
                 $("#displayLine" + (i)).html("");
+                $("#displayLine" + i).css("font-size", "30px");
+                $("#displayLine" + i + " span").css("font-size", "30px");
+                $("#displayLine" + i + " i").css("font-size", "30px");
             }
         }
+
         render.displayInput();
     },
 
@@ -354,22 +366,19 @@ var render = {
                 usePower = true;
             }
             if (usePower) {
+                if(render.translateOperator(input)===input) {
+                    displayLine1.innerHTML += "<sup><i>" + render.translateOperator(input) + "</i></sup>";
+                } else {
+                    displayLine1.innerHTML += "<sup><i>" + render.translateOperator(input) + "</i></sup>";
+                }
                 if (input === "leftParen") {
                     leftParenCount++;
                 }
                 if (input === "rightParen") {
                     rightParenCount++;
                 }
-                displayLine1.innerHTML += "<sup>" + render.translateOperator(input) + "</sup>";
-            }
-            if(!usePower) {
-                if ((render.translateOperator(input) === input)) {
-                    displayLine1.innerHTML += render.translateOperator(input);
-                } else if(input==="leftParen" || input==="rightParen") {
-                    displayLine1.innerHTML += "<i>" + render.translateOperator(input) + "</i>";
-                } else {
-                    displayLine1.innerHTML += "<span>" + render.translateOperator(input) + "</span>";
-                    }
+            } else {
+                displayLine1.innerHTML += render.translateOperator(input);
                 }
 
             if (usePower===true && rightParenCount!==0 && rightParenCount===leftParenCount) {
@@ -383,13 +392,13 @@ var render = {
     translateOperator: function (input) {
         switch (input.toString()) {
         case "divide":
-            return "&divide;";
+            return "<span>&divide;</span>";
         case "multiply":
-            return "x";
+            return "<span>x</span>";
         case "minus":
-            return "-";
+            return "<span>-</span>";
         case "plus":
-            return "+";
+            return "<span>+</span>";
         case "xToTheNegativeOne":
             return "<sup>-1</sup>";
         case "xsquared":
@@ -417,25 +426,30 @@ var render = {
         case "squareroot":
             return "&radic;";
         case "leftParen":
-            return "(";
+            return "<i>(</i>";
         case "rightParen":
-            return ")";
+            return "<i>)</i>";
         case "period":
             return ".";
         case "-":
-            return "<sup><i>-</i></sup>";
+            return "<span>-</span>";
         default:
             return input;
         }
     },
 
     dynamicFontSize: function () {
+        var newDivFontSize;
         //reduces font-size so that the input always fits inside the display's width
         for (var i = 1; i < 8; i++) {
             var displayLine = document.getElementById("displayLine" + i);
+
+        //    var displayLine = "displayLine" + i;
             while (displayLine.clientWidth > 390) {
-                var currentFontSize = parseFloat(window.getComputedStyle(displayLine, null).getPropertyValue("font-size"));
-                displayLine.style.fontSize = (currentFontSize - 1).toString() + "px";
+                newDivFontSize = parseInt($("#displayLine" + i).css("font-size"))-1;
+                $("#displayLine" + i).css("font-size", newDivFontSize);
+                $("#displayLine" + i + " span").css("font-size", newDivFontSize - 5);
+                $("#displayLine" + i + " i").css("font-size", newDivFontSize - 5);
             }
         }
     }

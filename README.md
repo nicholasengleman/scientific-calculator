@@ -16,7 +16,8 @@ This calculator was inspired by the Windows 10 Scientific Calculator with the fo
 
 
 ##Bugs
-1.
+1. Infinite While loop detection
+2. Fix bug in last equation
 
 
 

@@ -237,6 +237,16 @@ var model = {
                         i--;
                         break;
                     }
+                case "log":
+                    if (!isNaN(this.displayCurrent[i - 1])) {
+                        this.displayCurrent.splice(i, 3, "multiply", Math.log(parseFloat(this.displayCurrent[i + 2])));
+                        i--;
+                        break;
+                    } else {
+                        this.displayCurrent.splice(i, 3, Math.log(this.displayCurrent[i + 2]));
+                        i--;
+                        break;
+                    }
             }
         }
 
@@ -288,7 +298,6 @@ var model = {
 
         if (foundleftParenLocation === true) {
             var previousCharacter = this.displayCurrent[leftParenLocation  - 1];
-            console.log("previous charc" + previousCharacter);
             if (previousCharacter === "minus" ||
                 previousCharacter === "plus" ||
                 previousCharacter === "divide" ||
@@ -359,18 +368,14 @@ var render = {
         $("#displayLine1").removeClass("displayAnswer").addClass("displayInput");
         var displayLine1 = document.getElementById("displayLine1");
         displayLine1.innerHTML = "";
-        var usePower, leftParenCount=0, rightParenCount=0;
+        var usePower=false, leftParenCount=0, rightParenCount=0;
 
         model.displayCurrent.forEach(function (input) {
             if (input === "power") {
                 usePower = true;
             }
             if (usePower) {
-                if(render.translateOperator(input)===input) {
-                    displayLine1.innerHTML += "<sup><i>" + render.translateOperator(input) + "</i></sup>";
-                } else {
-                    displayLine1.innerHTML += "<sup><i>" + render.translateOperator(input) + "</i></sup>";
-                }
+                displayLine1.innerHTML += "<sup>" + render.translateOperator(input) + "</sup>";
                 if (input === "leftParen") {
                     leftParenCount++;
                 }
@@ -381,8 +386,10 @@ var render = {
                 displayLine1.innerHTML += render.translateOperator(input);
                 }
 
-            if (usePower===true && rightParenCount!==0 && rightParenCount===leftParenCount) {
+            if (rightParenCount!==0 && rightParenCount===leftParenCount) {
                 usePower = false;
+                rightParenCount = 0;
+                leftParenCount = 0;
             }
         });
         this.dynamicFontSize();
@@ -403,6 +410,8 @@ var render = {
             return "<sup>-1</sup>";
         case "xsquared":
             return "<sup>2</sup>";
+            case "log":
+                return "LOG";
         case "sine":
             return "SIN";
         case "cosine":
@@ -448,8 +457,8 @@ var render = {
             while (displayLine.clientWidth > 390) {
                 newDivFontSize = parseInt($("#displayLine" + i).css("font-size"))-1;
                 $("#displayLine" + i).css("font-size", newDivFontSize);
-                $("#displayLine" + i + " span").css("font-size", newDivFontSize - 5);
-                $("#displayLine" + i + " i").css("font-size", newDivFontSize - 5);
+                $("#displayLine" + i + " span").css({"font-size" : newDivFontSize - 5, "vertical-align" : "10%", "margin" : "1px", "letter-spacing" : "0"});
+                $("#displayLine" + i + " i").css({"font-size" : newDivFontSize - 5, "vertical-align" : "10%" });
             }
         }
     }
@@ -466,7 +475,9 @@ var handlers = {
         } else {
             id = e.target.parentNode.id;
         }
-        if (id === "solve") {
+        if(id==="undo") {
+            model.backspace();
+        } else if (id === "solve") {
             model.calc();
         } else if (id === "clear") {
             model.clear(false);
@@ -483,7 +494,8 @@ var handlers = {
                        (id === "power") ||
                        (id === "sineInverse") ||
                        (id === "cosineInverse") ||
-                       (id === "tangentInverse")) {
+                       (id === "tangentInverse") ||
+                       (id === "log")) {
                 model.addInput(id, true);
             } else {
                 model.addInput(id, false);
@@ -494,69 +506,114 @@ var handlers = {
 
         if (!e.shiftKey && (e.keyCode === 48 || e.keyCode === 96)) {
             model.addInput("0");
+            this.keypress("#0", 1);
         }
         if (e.keyCode === 49 || e.keyCode === 97) {
             model.addInput("1");
+            this.keypress("#1", 1);
         }
         if (e.keyCode === 50 || e.keyCode === 98) {
             model.addInput("2");
+            this.keypress("#2", 1);
         }
         if (e.keyCode === 51 || e.keyCode === 99) {
             model.addInput("3");
+            this.keypress("#3", 1);
         }
         if (e.keyCode === 52 || e.keyCode === 100) {
             model.addInput("4");
+            this.keypress("#4", 1);
         }
         if (e.keyCode === 53 || e.keyCode === 101) {
             model.addInput("5");
+            this.keypress("#5", 1);
         }
         if (!e.shiftKey && (e.keyCode === 54 || e.keyCode === 102)) {
             model.addInput("6");
+            this.keypress("#6", 1);
         }
         if (e.keyCode === 55 || e.keyCode === 103) {
             model.addInput("7");
+            this.keypress("#7", 1);
         }
         if ((!e.shiftKey && e.keyCode === 56) || e.keyCode === 104) {
             model.addInput("8");
+            this.keypress("#8", 1);
         }
         if ((!e.shiftKey && e.keyCode === 57) || e.keyCode === 46) {
             model.addInput("9");
+            this.keypress("#9", 1);
         }
         if (e.keyCode === 190) {
             model.addInput("period");
+            this.keypress("#period", 1);
         }
         if ((e.shiftKey && e.keyCode === 187) || e.keyCode === 107) {
             model.addInput("plus");
+            this.keypress("#plus", 2);
         }
         if ((e.shiftKey && e.keyCode === 189) || e.keyCode === 109) {
             model.addInput("minus");
+            this.keypress("#minus", 2);
         }
-        if ((e.shiftKey && e.keyCode === 56) || e.keyCode === 106) {
+        if ((e.shiftKey && e.keyCode === 56) || e.keyCode === 106 || e.keyCode === 88) {
             model.addInput("multiply");
-        }
-        if (e.keyCode === 88) {
-            model.addInput("multiply");
+            this.keypress("#multiply", 2);
         }
         if (e.keyCode === 191 || e.keyCode === 111) {
             model.addInput("divide");
+            this.keypress("#divide", 2);
         }
         if (e.shiftKey && e.keyCode === 57) {
             model.addInput("leftParen");
+            this.keypress("#leftParen", 3);
         }
         if (e.shiftKey && e.keyCode === 48) {
             model.addInput("rightParen");
+            this.keypress("#rightParen", 3);
         }
         if (e.shiftKey && e.keyCode === 54) {
             model.addInput("power");
+            this.keypress("#power", 3);
         }
         if (!e.shiftKey && e.keyCode === 189) {
             model.addInput("-");
+            this.keypress("#-", 2);
         }
         if (e.keyCode === 8) {
             model.backspace();
+            this.keypress("#undo", 4);
         }
         if (e.keyCode === 13) {
             model.calc();
+            this.keypress("#solve", 2);
+        }
+    },
+
+    keypress: function(keyID, keyCode) {
+        if (keyCode === 1) {
+            $(keyID).removeClass("numberKey").addClass("numberKeyPress buttonActive");
+            setTimeout(function () {
+                $(keyID).removeClass("numberKeyPress buttonActive").addClass("numberKey");
+            }, 90);
+        }
+        if (keyCode === 2) {
+            $(keyID).removeClass("functionKey").addClass("functionKeyPress buttonActive");
+            setTimeout(function () {
+                $(keyID).removeClass("functionKeyPress buttonActive").addClass("functionKey");
+            }, 90);
+        }
+        if (keyCode === 3) {
+            $(keyID).removeClass("advancedfunctionKey").addClass("advancedfunctionKeyPress buttonActive");
+            setTimeout(function () {
+                $(keyID).removeClass("advancedfunctionKeyPress buttonActive").addClass("advancedfunctionKey");
+            }, 90);
+        }
+        if (keyCode === 4) {
+            $(keyID).removeClass("clearKey").addClass("clearKeyPress buttonActive");
+            setTimeout(function () {
+                $(keyID).removeClass("clearKeyPress buttonActive").addClass("clearKey");
+            }, 90);
         }
     }
 };

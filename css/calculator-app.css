@@ -1,0 +1,329 @@
+html {
+	font-size: 16px;
+}
+body {
+	background-color: white;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 50px 0;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.calculator {
+	width: 450px;
+	background: linear-gradient(to bottom right, hsl(348, 83%, 65%), hsl(348, 83%, 70%));
+	border-radius: 15px;
+	box-shadow: 10px 10px 20px hsl(0, 0%, 50%);
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 4px solid darkslategrey;
+	border-bottom: 4px solid darkslategrey;
+}
+
+.calculator:active {
+	box-shadow: 9px 9px 18px hsl(0, 0%, 50%);
+}
+
+.instructions, .features {
+	height: 200px;
+	width: 300px;
+	background-color: lightblue;
+	padding: 25px 75px;
+	margin:25px;
+	font-size: 1rem;
+	line-height: 30px;
+}
+
+section h2 {
+	font-weight: 600;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+section ul {
+	list-style: square;
+}
+
+
+/*==================
+Calculator Display Styles
+===================*/
+
+.display {
+	width: 90%;
+	height: 250px;
+	background: linear-gradient(to bottom right, hsl(0, 0%, 90%), white);
+	margin: 20px auto 10px auto;
+	border-top: 4px solid black;
+	border-left: 4px solid black;
+	border-right: 3px solid darkslategrey;
+	border-bottom: 3px solid darkslategrey;
+	border-radius: 10px;
+	font-family: 'Courier New';
+	text-align: right;
+	padding: 10px 10px 0 0;
+}
+
+.display:active {
+	background: linear-gradient(to bottom right, hsl(0, 0%, 40%), white);
+}
+
+.displayInput {
+	height: 70px;
+	font-size: 3rem;
+	display: inline-block;
+	font-weight: 500;
+	padding: 20px 10px;
+	letter-spacing: -3px;
+}
+
+.displayInput > span {
+	color: grey;
+	display: inline-block;
+	font-size: 2rem;
+	margin: 0 4px;
+	vertical-align: 10%;
+}
+
+.displayInput > i {
+	display: inline-block;
+	font-size: 1.6rem;
+	margin: 0 -1px;
+	vertical-align: top;
+}
+
+.displayInput sup span {
+	margin: 0 4px;
+}
+
+.displayInput sup i {
+	margin: 0 -1px;
+}
+
+
+.displayInput sup {
+	color: blue;
+	vertical-align: super;
+	font-size:  1.2rem;
+	letter-spacing: 0;
+	display: inline-block;
+}
+
+.displayAnswer {
+	height: 70px;
+	line-height: 70px;
+	font-size: 2rem;
+	font-weight: 700;
+	display: inline-block;
+}
+
+.displayHistory {
+	height: 30px;
+	line-height: 30px;
+	font-size: 1.5rem;
+	color: grey;
+	display: inline-block;
+}
+
+.displayHistory span {
+	vertical-align: 10%;
+	margin: 0 5px;
+}
+
+.displayHistory sup {
+	vertical-align: super;
+	font-size:  1rem;
+}
+
+/*=======================
+Keypad Styles
+=========================*/
+
+.keypad {
+	width: 90%;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: space-between;
+	margin: 5% auto 0 auto;
+}
+
+.keyRow {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+/*==================
+Button Styles
+====================*/
+
+button {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.8rem;
+	width: 16%;
+	height: 50px;
+	outline: none;
+	border-radius: 5px;
+	font-weight: 700;
+	border: 1px solid brown;
+	box-shadow: 4px 4px 6px black;
+}
+
+button:active, .buttonActive {
+	box-shadow: 1px 1px 1px black;
+}
+
+button sup {
+	vertical-align: super;
+	font-size: smaller;
+}
+
+
+.numberKey {
+	color: hsl(0, 0%, 40%);
+	background: linear-gradient(to bottom right, hsl(0, 0%, 90%), hsl(0, 0%, 95%));
+}
+
+.numberKey:active, .numberKeyPress {
+	color: hsl(0, 0%, 60%);
+	background: linear-gradient(to bottom right, hsl(0, 0%, 93%), hsl(0, 0%, 95%));
+}
+
+.functionKey {
+	color: hsl(0, 100%, 100%);
+	background: linear-gradient(to bottom right, hsl(219, 79%, 60%), hsl(219, 79%, 65%));
+}
+
+.functionKey:active, .functionKeyPress {
+	color: hsl(0, 100%, 95%);
+	background: linear-gradient(to bottom right, hsl(219, 79%, 63%), hsl(219, 79%, 65%));
+}
+
+.advancedfunctionKey {
+	color: hsl(0, 100%, 100%);
+	background: linear-gradient(to bottom right,hsl(82, 39%, 25%), hsl(82, 39%, 30%));
+}
+
+.advancedfunctionKey:active, .advancedfunctionKeyPress {
+	color: hsl(0, 100%, 95%);
+	background: linear-gradient(to bottom right,hsl(82, 39%, 27%), hsl(82, 39%, 30%));
+}
+.clearKey {
+	color: hsl(0, 100%, 100%);
+	background: linear-gradient(to bottom right,  hsl(30, 72%, 47%), hsl(30, 72%, 52%));
+}
+
+.clearKey:active, .clearKeyPress {
+	color: hsl(0, 100%, 95%);
+	background: linear-gradient(to bottom right,  hsl(30, 72%, 50%),  hsl(30, 72%, 52%));
+}
+
+
+
+
+@media (max-width: 1460px) {
+	.features {
+		order: 1;
+	}
+	.calculator {
+		order: 3;
+		margin: 25px 0 0 0;
+	}
+	.instructions {
+		order: 2;
+	}
+}
+
+
+@media (max-width: 500px) {
+	body {
+		padding: 20px 0;
+	}
+	.calculator {
+		width: 90%;
+	}
+	.display {
+		height: 200px;
+	}
+	.displayInput {
+		height: 50px;
+		font-size: 2.5rem;
+		padding: 10px 5px;
+	}
+	.displayAnswer {
+		height: 40px;
+		line-height: 40px;
+		font-size: 2rem;
+	}
+	.displayHistory {
+		height: 20px;
+		line-height: 20px;
+		font-size:1rem;
+	}
+	.displayHistory h3 {
+		font-size: 2rem;
+	}
+	.keypad {
+		height: 65%;
+	}
+	button {
+		font-size: 0.6rem;
+		height: 40px;
+	}
+	.keyRow {
+		margin-bottom: 10px;
+	}
+	.instructions, .features {
+		height: 150px;
+		width: 75%;
+		background-color: lightblue;
+		padding: 10px 25px;
+		margin: 0 0 15px 0;
+		font-size: 1rem;
+		line-height: 1.5rem;
+	}
+	section h2 {
+		margin-bottom: 10px;
+	}
+}
+
+@media (max-width: 350px) {
+	.instructions, .features {
+		height: 100%;
+	}
+	.display {
+		height: 150px;
+	}
+	.displayInput {
+		height: 40px;
+		font-size: 2.2rem;
+		padding: 7px 3px;
+	}
+	.displayAnswer {
+		height: 30px;
+		line-height: 30px;
+		font-size: 1.5rem;
+	}
+	.displayHistory {
+		height: 10px;
+		line-height: 10px;
+		font-size:0.8rem;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+

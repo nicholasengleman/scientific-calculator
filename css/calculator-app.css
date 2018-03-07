@@ -54,7 +54,7 @@ Calculator Display Styles
 ===================*/
 
 .display {
-	width: 90%;
+	width: 85%;
 	height: 250px;
 	background: linear-gradient(to bottom right, hsl(0, 0%, 90%), white);
 	margin: 20px auto 10px auto;
@@ -65,7 +65,7 @@ Calculator Display Styles
 	border-radius: 10px;
 	font-family: 'Courier New';
 	text-align: right;
-	padding: 10px 10px 0 0;
+	padding: 10px;
 }
 
 .display:active {
@@ -81,7 +81,7 @@ Calculator Display Styles
 	letter-spacing: -3px;
 }
 
-.displayInput > span {
+.displayInput span {
 	color: grey;
 	display: inline-block;
 	font-size: 2rem;
@@ -89,11 +89,11 @@ Calculator Display Styles
 	vertical-align: 10%;
 }
 
-.displayInput > i {
+.displayInput i {
 	display: inline-block;
-	font-size: 1.6rem;
-	margin: 0 -1px;
-	vertical-align: top;
+	font-size: 2.3rem;
+	margin: 0 -3px;
+	vertical-align: 15%;
 }
 
 .displayInput sup span {
@@ -102,12 +102,13 @@ Calculator Display Styles
 
 .displayInput sup i {
 	margin: 0 -1px;
+	font-size: 1.5rem;
 }
 
 
 .displayInput sup {
 	color: blue;
-	vertical-align: super;
+	vertical-align: 130%;
 	font-size:  1.2rem;
 	letter-spacing: 0;
 	display: inline-block;
@@ -255,6 +256,10 @@ button sup {
 		font-size: 2.5rem;
 		padding: 10px 5px;
 	}
+	.displayInput i {
+		font-size: 2rem;
+		vertical-align: 12%;
+	}
 	.displayAnswer {
 		height: 40px;
 		line-height: 40px;
@@ -267,6 +272,9 @@ button sup {
 	}
 	.displayHistory h3 {
 		font-size: 2rem;
+	}
+	.displayHistory sup {
+		font-size:  0.5rem;
 	}
 	.keypad {
 		height: 65%;

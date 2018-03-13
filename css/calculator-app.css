@@ -98,6 +98,8 @@ Calculator Display Styles
 
 .displayInput sup span {
 	margin: 0 4px;
+	font-size: 1.2rem;
+	vertical-align: 15%;
 }
 
 .displayInput sup i {
@@ -119,7 +121,6 @@ Calculator Display Styles
 	line-height: 70px;
 	font-size: 2rem;
 	font-weight: 700;
-	display: inline-block;
 }
 
 .displayHistory {

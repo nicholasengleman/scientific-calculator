@@ -6,9 +6,14 @@ const model = {
 	displayHistory: [],
 	equation: "",
 	combineWithNextInput: false,
+	error: false,
 
 
 	addInput: function (input, addParen) {
+		if (this.error === true) {
+			this.displayCurrent = [];
+			this.error = false;
+		}
 		//concats number input to previous input if it is part of a larger number being inputed
 		if (!isNaN(input) && this.combineWithNextInput) {
 			this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + input;
@@ -38,11 +43,12 @@ const model = {
 			this.displayCurrent.push("leftParen");
 		}
 		render.displayInput();
+
 	},
 
 	backspace: function () {
 		if (!isNaN(this.displayCurrent[this.displayCurrent.length - 1]) && this.displayCurrent[this.displayCurrent.length - 1] > 9) {
-			var lastItem = String(this.displayCurrent[this.displayCurrent.length - 1]).split("");
+			let lastItem = String(this.displayCurrent[this.displayCurrent.length - 1]).split("");
 			lastItem.pop();
 			this.displayCurrent[this.displayCurrent.length - 1] = lastItem.join("");
 		} else if (this.displayCurrent.length < 2) {
@@ -60,25 +66,28 @@ const model = {
 			this.calcInsideParenthesis();
 		}
 		render.displayInput();
-		$("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
-		this.shiftHistory(this.equation);
+
+		if (!this.error) {
+			$("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
+			this.shiftHistory(this.equation);
+		}
 	},
 
 
 	findParenthesis: function () {
-		var start = 0;
-		var end = model.displayCurrent.length;
-		var foundRightParen = false;
-		var foundLeftParen = false;
+		let start = 0;
+		let end = model.displayCurrent.length;
+		let foundRightParen = false;
+		let foundLeftParen = false;
 
-		for (var e = model.displayCurrent.length; e >= 0; e--) {
+		for (let e = model.displayCurrent.length; e >= 0; e--) {
 			if (model.displayCurrent[e] === "leftParen") {
 				start = e;
 				foundLeftParen = true;
 				break;
 			}
 		}
-		for (var i = start; i <= model.displayCurrent.length; i++) {
+		for (let i = start; i <= model.displayCurrent.length; i++) {
 			if (model.displayCurrent[i] === "rightParen") {
 				end = i;
 				foundRightParen = true;
@@ -90,7 +99,7 @@ const model = {
 
 
 	calcInsideParenthesis: function () {
-		var i, result;
+		let i, result;
 
 		//translates constants and factorial
 		for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
@@ -186,7 +195,8 @@ const model = {
 					} else {
 						model.displayCurrent = [];
 						model.combineWithNextInput = false;
-						model.displayCurrent.push("NaN");
+						model.error = true;
+						model.displayCurrent.push("ASIN must be between -1 and 1");
 						break;
 					}
 					i--;
@@ -205,7 +215,8 @@ const model = {
 					} else {
 						model.displayCurrent = [];
 						model.combineWithNextInput = false;
-						model.displayCurrent.push("NaN");
+						model.error = true;
+						model.displayCurrent.push("ACOS must be between -1 and 1");
 						break;
 					}
 					i--;
@@ -220,13 +231,21 @@ const model = {
 						break;
 					}
 				case "log":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.log(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
+					if (this.displayCurrent[i + 2] > 0) {
+						if (!isNaN(this.displayCurrent[i - 1])) {
+							this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.log(parseFloat(this.displayCurrent[i + 2]))));
+							i--;
+							break;
+						} else {
+							this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.log(this.displayCurrent[i + 2])));
+							i--;
+							break;
+						}
 					} else {
-						this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.log(this.displayCurrent[i + 2])));
-						i--;
+						model.displayCurrent = [];
+						model.combineWithNextInput = false;
+						model.error = true;
+						model.displayCurrent.push("log must be greater than zero");
 						break;
 					}
 			}
@@ -237,20 +256,20 @@ const model = {
 		for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
 			switch (this.displayCurrent[i]) {
 				case "divide":
-					if (this.displayCurrent[i + 1] !== 0) {
+					if (this.displayCurrent[i + 1] != 0) {
 						this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1])));
 						i--;
 						break;
 					} else {
 						model.displayCurrent = [];
 						model.combineWithNextInput = false;
-						model.displayCurrent.push("Can't divide by 0");
+						model.error = true;
+						model.displayCurrent.push("cannot divide by zero");
 						break;
 					}
 				case "multiply":
 					this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1])));
 					i--;
-
 					break;
 			}
 		}
@@ -278,13 +297,13 @@ const model = {
 
 
 	removesParenthesis: function () {
-		var leftParenLocation = this.findParenthesis()[0];
-		var rightParenLocation = this.findParenthesis()[1];
-		var foundleftParenLocation = this.findParenthesis()[2];
-		var foundrightParenLocation = this.findParenthesis()[3];
+		let leftParenLocation = this.findParenthesis()[0];
+		let rightParenLocation = this.findParenthesis()[1];
+		let foundleftParenLocation = this.findParenthesis()[2];
+		let foundrightParenLocation = this.findParenthesis()[3];
 
 		if (foundleftParenLocation === true) {
-			var previousCharacter = this.displayCurrent[leftParenLocation - 1];
+			let previousCharacter = this.displayCurrent[leftParenLocation - 1];
 			if (previousCharacter === "minus" ||
 				previousCharacter === "plus" ||
 				previousCharacter === "divide" ||
@@ -300,13 +319,15 @@ const model = {
 		}
 
 		if (foundrightParenLocation === true) {
-			var nextCharacter = this.displayCurrent[rightParenLocation + 1];
+			let nextCharacter = this.displayCurrent[rightParenLocation + 1];
 			if (nextCharacter === "minus" ||
 				nextCharacter === "plus" ||
 				nextCharacter === "divide" ||
 				nextCharacter === "multiply" ||
 				nextCharacter === "rightParen" ||
 				nextCharacter === "power" ||
+				nextCharacter === "xsquared" ||
+				nextCharacter === "xToTheNegativeOne" ||
 				nextCharacter === undefined ||
 				nextCharacter === null) {
 				this.displayCurrent.splice(rightParenLocation, 1);
@@ -323,7 +344,7 @@ const model = {
 		$("#displayLine1" + " span").removeAttr("style");
 		$("#displayLine1" + " i").removeAttr("style");
 		if (clearAllHistory) {
-			for (var i = 2; i < 8; i++) {
+			for (let i = 2; i < 8; i++) {
 				$("#displayLine" + i).html("");
 				$("#displayLine" + i).removeAttr("style");
 				$("#displayLine" + i + " span").removeAttr("style");
@@ -334,7 +355,7 @@ const model = {
 	},
 
 	shiftHistory: function (equation) {
-		for (var i = 6; i > 1; i--) {
+		for (let i = 6; i > 1; i--) {
 			$(`${'#displayLine'}${i + 1}`).html(function () {
 				return $(`${'#displayLine'}${i}`).html();
 			});
@@ -348,12 +369,12 @@ const model = {
 
 
 //View
-var render = {
+const render = {
 	displayInput: function () {
 		$("#displayLine1").removeClass("displayAnswer").addClass("displayInput");
-		var displayLine1 = document.getElementById("displayLine1");
+		let displayLine1 = document.getElementById("displayLine1");
 		displayLine1.innerHTML = "";
-		var usePower = false, leftParenCount = 0, rightParenCount = 0;
+		let usePower = false, leftParenCount = 0, rightParenCount = 0;
 
 		model.displayCurrent.forEach(function (input) {
 			if (input === "power") {
@@ -434,7 +455,7 @@ var render = {
 	},
 
 	dynamicFontSize: function (startLine, endLine) {
-		var newDivFontSize;
+		let newDivFontSize;
 		//reduces font-size so that the input always fits inside the display's width
 		let displayWidth = document.getElementById("displayWidth").clientWidth - 30;
 		for (let i = startLine; i < endLine + 1; i++) {
@@ -459,10 +480,10 @@ var render = {
 };
 
 //Controller
-var handlers = {
+const handlers = {
 
 	findId: function (e) {
-		var id = 0;
+		let id = 0;
 
 		if (e.target.id) {
 			id = e.target.id;

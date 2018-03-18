@@ -2,370 +2,442 @@
 
 /// /Model
 const model = {
-	displayCurrent: [],
-	displayHistory: [],
-	equation: "",
-	combineWithNextInput: false,
-	error: false,
+		displayCurrent: [],
+		displayHistory: [],
+		equation: "",
+		combineWithNextInput: false,
+		error: false,
 
 
-	addInput: function (input, addParen) {
-		if (this.error === true) {
+		addInput: function (input, addParen) {
+			if (this.error === true) {
+				this.displayCurrent = [];
+				this.error = false;
+			}
+			//concats number input to previous input if it is part of a larger number being inputed
+			if (!isNaN(input) && this.combineWithNextInput) {
+				this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + input;
+				//adds number input to new element in array if larger number is not being inputed
+			} else if (!isNaN(input) && !this.combineWithNextInput) {
+				this.displayCurrent.push(input);
+				this.combineWithNextInput = true;
+				//concats period to previous element containing number-
+			} else if (input === "period") {
+				if (this.displayCurrent.length > 0 && this.combineWithNextInput === true) {
+					this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + ".";
+					this.combineWithNextInput = true;
+				} else {
+					this.displayCurrent.push(".");
+					this.combineWithNextInput = true;
+				}
+			} else if (isNaN(input) && input !== "period") {
+				this.displayCurrent.push(input);
+				this.combineWithNextInput = false;
+			}
+
+			if (input === "-") {
+				this.combineWithNextInput = true;
+			}
+
+			if (addParen) {
+				this.displayCurrent.push("leftParen");
+			}
+			render.displayInput();
+
+		},
+
+		backspace: function () {
+			if (!isNaN(this.displayCurrent[this.displayCurrent.length - 1]) && this.displayCurrent[this.displayCurrent.length - 1] > 9) {
+				let lastItem = String(this.displayCurrent[this.displayCurrent.length - 1]).split("");
+				lastItem.pop();
+				this.displayCurrent[this.displayCurrent.length - 1] = lastItem.join("");
+			} else if (this.displayCurrent.length < 2) {
+				this.displayCurrent[0] = "";
+			} else {
+				this.displayCurrent.pop();
+			}
+			render.displayInput();
+		},
+
+		calc: function () {
+			this.equation = $("#displayLine1").html();
+
+			while (this.displayCurrent.length > 1) {
+				this.calcInsideParenthesis();
+			}
+			render.displayInput();
+
+			if (!this.error) {
+				$("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
+				this.shiftHistory(this.equation);
+			}
+		},
+
+
+		findParenthesis: function () {
+			let start = 0;
+			let end = model.displayCurrent.length;
+			let foundRightParen = false;
+			let foundLeftParen = false;
+
+			for (let e = model.displayCurrent.length; e >= 0; e--) {
+				if (model.displayCurrent[e] === "leftParen") {
+					start = e;
+					foundLeftParen = true;
+					break;
+				}
+			}
+			for (let i = start; i <= model.displayCurrent.length; i++) {
+				if (model.displayCurrent[i] === "rightParen") {
+					end = i;
+					foundRightParen = true;
+					break;
+				}
+			}
+			return [start, end, foundLeftParen, foundRightParen];
+		},
+
+
+		calcInsideParenthesis: function () {
+			let i;
+
+			//translates constants and factorial
+			for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+				switch (this.displayCurrent[i]) {
+					case "PI":
+						if (!isNaN(this.displayCurrent[i - 1])) {
+							this.displayCurrent.splice(i, 1, "multiply", 3.14159);
+							break;
+						} else {
+							this.displayCurrent.splice(i, 1, 3.14159);
+							break;
+						}
+					case "E":
+						if (!isNaN(this.displayCurrent[i - 1])) {
+							this.displayCurrent.splice(i, 1, "multiply", 2.71828);
+							break;
+						}
+						else {
+							this.displayCurrent.splice(i, 1, 2.71828);
+							break;
+						}
+				}
+			}
+
+			//computes powers
+			for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+				switch (this.displayCurrent[i]) {
+					case "xToTheNegativeOne":
+						if (!isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.displayCurrent.splice(i - 1, 2, this.roundFloatingPoint(Math.pow(parseFloat(this.displayCurrent[i - 1]), -1)));
+							i--;
+							break;
+						} else {
+							this.errorReset("power base must be a number");
+							break;
+						}
+					case "xsquared":
+						if (!isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.displayCurrent.splice(i - 1, 2, this.roundFloatingPoint(Math.pow(parseFloat(this.displayCurrent[i - 1]), 2)));
+							i--;
+							break;
+						} else {
+							this.errorReset("power base must be a number");
+							break;
+						}
+					case "power":
+						if (!isNaN(parseFloat(this.displayCurrent[i - 1])) && !isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							this.displayCurrent.splice(i - 1, 4, this.roundFloatingPoint(Math.pow(parseFloat(this.displayCurrent[i - 1]), parseFloat(this.displayCurrent[i + 2]))));
+							i--;
+							break;
+						}
+						else if (!isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.errorReset("power base must be a number");
+							break;
+						}
+						else {
+							this.errorReset("power exponent must be a number");
+							break;
+						}
+					case "squareroot":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.sqrt(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							}
+							else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.sqrt(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							}
+						} else {
+							this.errorReset("squareroot needs be a number");
+							break;
+						}
+					case "sine":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.sin(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.sin(this.displayCurrent[i + 2])));
+								i--;
+								break;
+							}
+						} else {
+							this.errorReset("sine needs be a number");
+							break;
+						}
+					case "cosine":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.cos(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.cos(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							}
+						} else {
+							this.errorReset("cosine needs be a number");
+							break;
+						}
+					case "tangent":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.tan(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.tan(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							}
+						} else {
+							this.errorReset("tangent needs be a number");
+							break;
+						}
+					case "sineInverse":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]) && parseFloat(this.displayCurrent[i + 2]) > -1 && parseFloat(this.displayCurrent[i + 2]) < 1)) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.asin(this.displayCurrent[i + 2])));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.asin(this.displayCurrent[i + 2])));
+								i--;
+								break;
+							}
+						} else if ((parseFloat(this.displayCurrent[i + 2]) < -1) || (parseFloat(this.displayCurrent[i + 2]) > 1)) {
+							this.errorReset("ASIN must be between -1 and 1");
+							break;
+						} else {
+							this.errorReset("ASIN needs be a number");
+							break;
+						}
+					case "cosineInverse":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]) && parseFloat(this.displayCurrent[i + 2]) > -1 && parseFloat(this.displayCurrent[i + 2]) < 1)) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.acos(this.displayCurrent[i + 2])));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.acos(this.displayCurrent[i + 2])));
+								i--;
+								break;
+							}
+						} else if ((parseFloat(this.displayCurrent[i + 2]) < -1) || (parseFloat(this.displayCurrent[i + 2]) > 1)) {
+							this.errorReset("ACOS must be between -1 and 1");
+							break;
+						} else {
+							this.errorReset("ACOS needs be a number");
+							break;
+						}
+					case "tangentInverse":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.atan(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.atan(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							}
+						}
+						else {
+							this.errorReset("ATAN needs be a number");
+							break;
+						}
+					case "log":
+						if (this.displayCurrent[i + 2] > 0 && !isNaN(parseFloat(this.displayCurrent[i + 2]))) {
+							if (!isNaN(this.displayCurrent[i - 1])) {
+								this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.log(parseFloat(this.displayCurrent[i + 2]))));
+								i--;
+								break;
+							} else {
+								this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.log(this.displayCurrent[i + 2])));
+								i--;
+								break;
+							}
+						} else if (this.displayCurrent[i + 2] <= 0) {
+							this.errorReset("log must be greater than zero");
+							break;
+						} else {
+							this.errorReset("log needs be a number");
+							break;
+						}
+				}
+			}
+
+
+			//computes multiplication and division
+			for (i = this.findParenthesis()[0];
+				 i <= this.findParenthesis()[1];
+				 i++
+			) {
+				switch (this.displayCurrent[i]) {
+					case "divide":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 1])) && !isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1])));
+							i--;
+							break;
+						} else if (parseFloat(this.displayCurrent[i + 1]) !== 0) {
+							this.errorReset("cannot divide by zero");
+							break;
+						} else {
+							this.errorReset("cannot divide non-numbers");
+							break;
+						}
+					case "multiply":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 1])) && !isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1])));
+							i--;
+							break;
+						} else {
+							this.errorReset("cannot multiply non-numbers");
+							break;
+						}
+				}
+			}
+
+
+//computes addition and subtraction
+			for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
+				switch (this.displayCurrent[i]) {
+					case "plus":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 1])) && !isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) + parseFloat(this.displayCurrent[i + 1])));
+							i--;
+							break;
+						} else {
+							this.errorReset("cannot add non-numbers");
+							break;
+						}
+					case "minus":
+						if (!isNaN(parseFloat(this.displayCurrent[i + 1])) && !isNaN(parseFloat(this.displayCurrent[i - 1]))) {
+							this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) - parseFloat(this.displayCurrent[i + 1])));
+							i--;
+							break;
+						} else {
+							this.errorReset("cannot subtract non-numbers");
+							break;
+						}
+				}
+			}
+			this.removesParenthesis();
+		},
+
+		roundFloatingPoint: function (floatingPointNumber) {
+			return (floatingPointNumber * 1000).toFixed(0) / 1000;
+		}
+		,
+
+
+		removesParenthesis: function () {
+			let leftParenLocation = this.findParenthesis()[0];
+			let rightParenLocation = this.findParenthesis()[1];
+			let foundleftParenLocation = this.findParenthesis()[2];
+			let foundrightParenLocation = this.findParenthesis()[3];
+
+			if (foundleftParenLocation === true) {
+				let previousCharacter = this.displayCurrent[leftParenLocation - 1];
+				if (previousCharacter === "minus" ||
+					previousCharacter === "plus" ||
+					previousCharacter === "divide" ||
+					previousCharacter === "multiply" ||
+					previousCharacter === "leftParen" ||
+					previousCharacter === undefined ||
+					previousCharacter === null) {
+					this.displayCurrent.splice(leftParenLocation, 1);
+					rightParenLocation = rightParenLocation - 1;
+				} else {
+					this.displayCurrent.splice(leftParenLocation, 1, "multiply");
+				}
+			}
+
+			if (foundrightParenLocation === true) {
+				let nextCharacter = this.displayCurrent[rightParenLocation + 1];
+				if (nextCharacter === "minus" ||
+					nextCharacter === "plus" ||
+					nextCharacter === "divide" ||
+					nextCharacter === "multiply" ||
+					nextCharacter === "rightParen" ||
+					nextCharacter === "power" ||
+					nextCharacter === "xsquared" ||
+					nextCharacter === "xToTheNegativeOne" ||
+					nextCharacter === undefined ||
+					nextCharacter === null) {
+					this.displayCurrent.splice(rightParenLocation, 1);
+				} else {
+					this.displayCurrent.splice(rightParenLocation, 1, "multiply");
+				}
+			}
+		}
+		,
+
+		clear: function (clearAllHistory) {
 			this.displayCurrent = [];
-			this.error = false;
-		}
-		//concats number input to previous input if it is part of a larger number being inputed
-		if (!isNaN(input) && this.combineWithNextInput) {
-			this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + input;
-			//adds number input to new element in array if larger number is not being inputed
-		} else if (!isNaN(input) && !this.combineWithNextInput) {
-			this.displayCurrent.push(input);
-			this.combineWithNextInput = true;
-			//concats period to previous element containing number-
-		} else if (input === "period") {
-			if (this.displayCurrent.length > 0 && this.combineWithNextInput === true) {
-				this.displayCurrent[this.displayCurrent.length - 1] = this.displayCurrent[this.displayCurrent.length - 1] + ".";
-				this.combineWithNextInput = true;
-			} else {
-				this.displayCurrent.push(".");
-				this.combineWithNextInput = true;
-			}
-		} else if (isNaN(input) && input !== "period") {
-			this.displayCurrent.push(input);
 			this.combineWithNextInput = false;
-		}
-
-		if (input === "-") {
-			this.combineWithNextInput = true;
-		}
-
-		if (addParen) {
-			this.displayCurrent.push("leftParen");
-		}
-		render.displayInput();
-
-	},
-
-	backspace: function () {
-		if (!isNaN(this.displayCurrent[this.displayCurrent.length - 1]) && this.displayCurrent[this.displayCurrent.length - 1] > 9) {
-			let lastItem = String(this.displayCurrent[this.displayCurrent.length - 1]).split("");
-			lastItem.pop();
-			this.displayCurrent[this.displayCurrent.length - 1] = lastItem.join("");
-		} else if (this.displayCurrent.length < 2) {
-			this.displayCurrent[0] = "";
-		} else {
-			this.displayCurrent.pop();
-		}
-		render.displayInput();
-	},
-
-	calc: function () {
-		this.equation = $("#displayLine1").html();
-
-		while (this.displayCurrent.length > 1) {
-			this.calcInsideParenthesis();
-		}
-		render.displayInput();
-
-		if (!this.error) {
-			$("#displayLine1").removeClass("displayInput").addClass("displayAnswer");
-			this.shiftHistory(this.equation);
-		}
-	},
-
-
-	findParenthesis: function () {
-		let start = 0;
-		let end = model.displayCurrent.length;
-		let foundRightParen = false;
-		let foundLeftParen = false;
-
-		for (let e = model.displayCurrent.length; e >= 0; e--) {
-			if (model.displayCurrent[e] === "leftParen") {
-				start = e;
-				foundLeftParen = true;
-				break;
+			$("#displayLine1").removeAttr("style");
+			$("#displayLine1" + " span").removeAttr("style");
+			$("#displayLine1" + " i").removeAttr("style");
+			if (clearAllHistory) {
+				for (let i = 2; i < 8; i++) {
+					$("#displayLine" + i).html("");
+					$("#displayLine" + i).removeAttr("style");
+					$("#displayLine" + i + " span").removeAttr("style");
+					$("#displayLine" + i + " i").removeAttr("style");
+				}
 			}
+			render.displayInput();
 		}
-		for (let i = start; i <= model.displayCurrent.length; i++) {
-			if (model.displayCurrent[i] === "rightParen") {
-				end = i;
-				foundRightParen = true;
-				break;
+		,
+
+		errorReset: function (errorMessage) {
+			this.displayCurrent = [];
+			this.combineWithNextInput = false;
+			this.error = true;
+			this.displayCurrent.push(errorMessage);
+		}
+		,
+
+		shiftHistory: function (equation) {
+			for (let i = 6; i > 1; i--) {
+				$(`${'#displayLine'}${i + 1}`).html(function () {
+					return $(`${'#displayLine'}${i}`).html();
+				});
 			}
-		}
-		return [start, end, foundLeftParen, foundRightParen];
-	},
-
-
-	calcInsideParenthesis: function () {
-		let i, result;
-
-		//translates constants and factorial
-		for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
-			switch (this.displayCurrent[i]) {
-				case "PI":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 1, "multiply", 3.14159);
-						break;
-					} else {
-						this.displayCurrent.splice(i, 1, 3.14159);
-						break;
-					}
-				case "E":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 1, "multiply", 2.71828);
-						break;
-					}
-					else {
-						this.displayCurrent.splice(i, 1, 2.71828);
-						break;
-					}
-			}
-		}
-
-		//computes powers
-		for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
-			switch (this.displayCurrent[i]) {
-				case "xToTheNegativeOne":
-					this.displayCurrent.splice(i - 1, 2, this.roundFloatingPoint(Math.pow(parseFloat(this.displayCurrent[i - 1]), -1)));
-					i--;
-					break;
-				case "xsquared":
-					this.displayCurrent.splice(i - 1, 2, this.roundFloatingPoint(Math.pow(parseFloat(this.displayCurrent[i - 1]), 2)));
-					i--;
-					break;
-				case "power":
-					this.displayCurrent.splice(i - 1, 4, this.roundFloatingPoint(Math.pow(parseFloat(this.displayCurrent[i - 1]), parseFloat(this.displayCurrent[i + 2]))));
-					i--;
-					break;
-				case "squareroot":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.sqrt(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					}
-					else {
-						this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.sqrt(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					}
-				case "sine":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.sin(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					} else {
-						this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.sin(this.displayCurrent[i + 2])));
-						i--;
-						break;
-					}
-				case "cosine":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.cos(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					} else {
-						this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.cos(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					}
-				case "tangent":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.tan(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					} else {
-						this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.tan(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					}
-				case "sineInverse":
-					result = this.roundFloatingPoint(Math.asin(this.displayCurrent[i + 2]));
-					if (result) {
-						if (!isNaN(this.displayCurrent[i - 1])) {
-							this.displayCurrent.splice(i, 3, "multiply", result);
-							i--;
-							break;
-						} else {
-							this.displayCurrent.splice(i, 3, result);
-							i--;
-							break;
-						}
-					} else {
-						model.displayCurrent = [];
-						model.combineWithNextInput = false;
-						model.error = true;
-						model.displayCurrent.push("ASIN must be between -1 and 1");
-						break;
-					}
-					i--;
-				case "cosineInverse":
-					result = this.roundFloatingPoint(Math.acos(this.displayCurrent[i + 2]));
-					if (result) {
-						if (!isNaN(this.displayCurrent[i - 1])) {
-							this.displayCurrent.splice(i, 3, "multiply", result);
-							i--;
-							break;
-						} else {
-							this.displayCurrent.splice(i, 3, result);
-							i--;
-							break;
-						}
-					} else {
-						model.displayCurrent = [];
-						model.combineWithNextInput = false;
-						model.error = true;
-						model.displayCurrent.push("ACOS must be between -1 and 1");
-						break;
-					}
-					i--;
-				case "tangentInverse":
-					if (!isNaN(this.displayCurrent[i - 1])) {
-						this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.atan(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					} else {
-						this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.atan(parseFloat(this.displayCurrent[i + 2]))));
-						i--;
-						break;
-					}
-				case "log":
-					if (this.displayCurrent[i + 2] > 0) {
-						if (!isNaN(this.displayCurrent[i - 1])) {
-							this.displayCurrent.splice(i, 3, "multiply", this.roundFloatingPoint(Math.log(parseFloat(this.displayCurrent[i + 2]))));
-							i--;
-							break;
-						} else {
-							this.displayCurrent.splice(i, 3, this.roundFloatingPoint(Math.log(this.displayCurrent[i + 2])));
-							i--;
-							break;
-						}
-					} else {
-						model.displayCurrent = [];
-						model.combineWithNextInput = false;
-						model.error = true;
-						model.displayCurrent.push("log must be greater than zero");
-						break;
-					}
-			}
-		}
-
-
-		//computes multiplication and division
-		for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
-			switch (this.displayCurrent[i]) {
-				case "divide":
-					if (this.displayCurrent[i + 1] != 0) {
-						this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) / parseFloat(this.displayCurrent[i + 1])));
-						i--;
-						break;
-					} else {
-						model.displayCurrent = [];
-						model.combineWithNextInput = false;
-						model.error = true;
-						model.displayCurrent.push("cannot divide by zero");
-						break;
-					}
-				case "multiply":
-					this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) * parseFloat(this.displayCurrent[i + 1])));
-					i--;
-					break;
-			}
-		}
-
-
-		//computes addition and subtraction
-		for (i = this.findParenthesis()[0]; i <= this.findParenthesis()[1]; i++) {
-			switch (this.displayCurrent[i]) {
-				case "plus":
-					this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) + parseFloat(this.displayCurrent[i + 1])));
-					i--;
-					break;
-				case "minus":
-					this.displayCurrent.splice(i - 1, 3, this.roundFloatingPoint(parseFloat(this.displayCurrent[i - 1]) - parseFloat(this.displayCurrent[i + 1])));
-					i--;
-					break;
-			}
-		}
-		this.removesParenthesis();
-	},
-
-	roundFloatingPoint: function (floatingPointNumber) {
-		return (floatingPointNumber * 1000).toFixed(0) / 1000;
-	},
-
-
-	removesParenthesis: function () {
-		let leftParenLocation = this.findParenthesis()[0];
-		let rightParenLocation = this.findParenthesis()[1];
-		let foundleftParenLocation = this.findParenthesis()[2];
-		let foundrightParenLocation = this.findParenthesis()[3];
-
-		if (foundleftParenLocation === true) {
-			let previousCharacter = this.displayCurrent[leftParenLocation - 1];
-			if (previousCharacter === "minus" ||
-				previousCharacter === "plus" ||
-				previousCharacter === "divide" ||
-				previousCharacter === "multiply" ||
-				previousCharacter === "leftParen" ||
-				previousCharacter === undefined ||
-				previousCharacter === null) {
-				this.displayCurrent.splice(leftParenLocation, 1);
-				rightParenLocation = rightParenLocation - 1;
-			} else {
-				this.displayCurrent.splice(leftParenLocation, 1, "multiply");
-			}
-		}
-
-		if (foundrightParenLocation === true) {
-			let nextCharacter = this.displayCurrent[rightParenLocation + 1];
-			if (nextCharacter === "minus" ||
-				nextCharacter === "plus" ||
-				nextCharacter === "divide" ||
-				nextCharacter === "multiply" ||
-				nextCharacter === "rightParen" ||
-				nextCharacter === "power" ||
-				nextCharacter === "xsquared" ||
-				nextCharacter === "xToTheNegativeOne" ||
-				nextCharacter === undefined ||
-				nextCharacter === null) {
-				this.displayCurrent.splice(rightParenLocation, 1);
-			} else {
-				this.displayCurrent.splice(rightParenLocation, 1, "multiply");
-			}
-		}
-	},
-
-	clear: function (clearAllHistory) {
-		this.displayCurrent = [];
-		this.combineWithNextInput = false;
-		$("#displayLine1").removeAttr("style");
-		$("#displayLine1" + " span").removeAttr("style");
-		$("#displayLine1" + " i").removeAttr("style");
-		if (clearAllHistory) {
-			for (let i = 2; i < 8; i++) {
-				$("#displayLine" + i).html("");
-				$("#displayLine" + i).removeAttr("style");
-				$("#displayLine" + i + " span").removeAttr("style");
-				$("#displayLine" + i + " i").removeAttr("style");
-			}
-		}
-		render.displayInput();
-	},
-
-	shiftHistory: function (equation) {
-		for (let i = 6; i > 1; i--) {
-			$(`${'#displayLine'}${i + 1}`).html(function () {
-				return $(`${'#displayLine'}${i}`).html();
+			$("#displayLine2").html(function () {
+				return equation + " = " + $("#displayLine1").html();
 			});
+			render.dynamicFontSize(2, 7);
 		}
-		$("#displayLine2").html(function () {
-			return equation + " = " + $("#displayLine1").html();
-		});
-		render.dynamicFontSize(2, 7);
 	}
-};
+;
 
 
 //View

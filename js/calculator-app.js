@@ -529,7 +529,7 @@ const render = {
 	dynamicFontSize: function (startLine, endLine) {
 		let newDivFontSize;
 		//reduces font-size so that the input always fits inside the display's width
-		let displayWidth = document.getElementById("displayWidth").clientWidth - 30;
+		let displayWidth = document.getElementById("displayWidth").clientWidth - 50;
 		for (let i = startLine; i < endLine + 1; i++) {
 			let displayLine = document.getElementById("displayLine" + i);
 
@@ -540,9 +540,9 @@ const render = {
 				}
 				$("#displayLine" + i).css("font-size", newDivFontSize);
 				$("#displayLine" + i + " span").css({
-					"font-size": newDivFontSize - 5,
+					"font-size": newDivFontSize - 1,
 					"vertical-align": "5%",
-					"margin": "1px",
+					"margin": "2px",
 					"letter-spacing": "0"
 				});
 				$("#displayLine" + i + " i").css({"font-size": newDivFontSize - 5, "vertical-align": "5%"});

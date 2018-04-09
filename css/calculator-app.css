@@ -29,7 +29,6 @@ body {
 }
 
 .instructions, .features {
-	height: 200px;
 	width: 300px;
 	background-color: lightblue;
 	padding: 25px 75px;
@@ -63,7 +62,7 @@ Calculator Display Styles
 	border-right: 3px solid darkslategrey;
 	border-bottom: 3px solid darkslategrey;
 	border-radius: 10px;
-	font-family: 'Courier New';
+	font-family: 'Arial';
 	text-align: right;
 	padding: 10px;
 }
@@ -79,34 +78,24 @@ Calculator Display Styles
 	font-weight: 500;
 	padding: 20px 10px;
 	letter-spacing: -3px;
+	color: saddlebrown;
 }
 
 .displayInput span {
 	color: grey;
 	display: inline-block;
 	font-size: 2rem;
-	margin: 0 4px;
-	vertical-align: 10%;
+	margin: 0 6px;
+	vertical-align: 20%;
 }
 
 .displayInput i {
 	display: inline-block;
 	font-size: 2.3rem;
-	margin: 0 -3px;
-	vertical-align: 15%;
+	margin: 0 2px;
+	vertical-align: 20%;
+	color: #62b2ff;
 }
-
-.displayInput sup span {
-	margin: 0 4px;
-	font-size: 1.2rem;
-	vertical-align: 15%;
-}
-
-.displayInput sup i {
-	margin: 0 -1px;
-	font-size: 1.5rem;
-}
-
 
 .displayInput sup {
 	color: blue;
@@ -115,6 +104,19 @@ Calculator Display Styles
 	letter-spacing: 0;
 	display: inline-block;
 }
+
+.displayInput sup span {
+	margin: 0 4px;
+	font-size: 1.2rem;
+	vertical-align: 20%;
+}
+
+.displayInput sup i {
+	margin: 0;
+	font-size: 1.5rem;
+	vertical-align: 20%;
+}
+
 
 .displayAnswer {
 	height: 70px;
@@ -133,12 +135,19 @@ Calculator Display Styles
 
 .displayHistory span {
 	vertical-align: 10%;
-	margin: 0 5px;
+	font-size: 1rem;
+	margin: 0 2px;
 }
 
 .displayHistory sup {
 	vertical-align: super;
 	font-size:  1rem;
+}
+
+.displayHistory i {
+	vertical-align: 10%;
+	font-size: 1.2rem;
+	margin: 0;
 }
 
 /*=======================
@@ -288,7 +297,6 @@ button sup {
 		margin-bottom: 10px;
 	}
 	.instructions, .features {
-		height: 150px;
 		width: 75%;
 		background-color: lightblue;
 		padding: 10px 25px;
